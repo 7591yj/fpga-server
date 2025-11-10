@@ -20,4 +20,4 @@ fi
 
 tailscale up --authkey "$AUTH_KEY" --hostname fpga-server --ssh
 
-echo "Tailscale setup complete."
+echo "Setting up Tailscale completed."

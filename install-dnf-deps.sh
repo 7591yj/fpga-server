@@ -20,4 +20,4 @@ else
   echo "firewalld not found; skipping disable step."
 fi
 
-echo "Setup completed."
+echo "Installing dnf deps completed."

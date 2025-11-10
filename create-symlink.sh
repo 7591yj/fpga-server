@@ -16,7 +16,7 @@ declare -A TARGETS=(
   ["$SRC_BASE/mnt/backup"]="/mnt/backup"
 )
 
-echo "Creating target directories and symlinks from $SRC_BASE ..."
+echo "Creating target directories and symlinks from $SRC_BASE..."
 
 for SRC in "${!TARGETS[@]}"; do
   DST="${TARGETS[$SRC]}"
@@ -39,4 +39,4 @@ for SRC in "${!TARGETS[@]}"; do
   echo "Linked $DST -> $SRC"
 done
 
-echo "Symlink setup complete."
+echo "Creating symlinks completed."
