@@ -2,7 +2,7 @@
 
 set -e
 
-TARGET_DIR="$HOME/fpga-server/opt/fpga_app/config"
+TARGET_DIR="/home/${SUDO_USER:-$USER}/fpga-server/opt/fpga_app/config"
 
 mkdir -p "$TARGET_DIR"
 
