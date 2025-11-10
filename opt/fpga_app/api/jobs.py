@@ -1,8 +1,6 @@
 import uuid
 import sqlite3
 import json
-import threading
-import time
 from flask import Blueprint, request, jsonify
 
 jobs_bp = Blueprint("jobs", __name__)
@@ -12,26 +10,6 @@ DB_PATH = "/opt/fpga_app/config/jobs.db"
 
 def db():
     return sqlite3.connect(DB_PATH, check_same_thread=False)
-
-
-# Simulated job runner
-def run_job(job_id):
-    with db() as conn:
-        conn.execute(
-            "UPDATE jobs SET status='running', ts_updated=CURRENT_TIMESTAMP WHERE id=?",
-            (job_id,),
-        )
-        conn.commit()
-
-    # mock computation or hardware call
-    time.sleep(3)
-
-    with db() as conn:
-        conn.execute(
-            "UPDATE jobs SET status='completed', result=?, ts_updated=CURRENT_TIMESTAMP WHERE id=?",
-            ("done", job_id),
-        )
-        conn.commit()
 
 
 @jobs_bp.route("/submit", methods=["POST"])
@@ -52,7 +30,6 @@ def submit_job():
         )
         conn.commit()
 
-    threading.Thread(target=run_job, args=(job_id,), daemon=True).start()
     return jsonify({"job_id": job_id, "status": "pending"})
 
 
