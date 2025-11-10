@@ -3,9 +3,17 @@ import time
 import multiprocessing
 import logging
 
-logging.basicConfig(
-    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
-)
+logger = logging.getLogger("fpga-server_logger")
+logger.setLevel(logging.DEBUG)
+
+log_file_path = "/var/log/fpga_app/api.out.log"
+file_handler = logging.FileHandler(log_file_path)
+file_handler.setLevel(logging.INFO)
+
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+file_handler.setFormatter(formatter)
+
+logger.addHandler(file_handler)
 
 DB_PATH = "/opt/fpga_app/config/jobs.db"
 MAX_CONCURRENT_JOBS = 4  # TODO: get limit using djtgcfg
