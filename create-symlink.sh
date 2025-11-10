@@ -14,6 +14,7 @@ declare -A TARGETS=(
   ["$SRC_BASE/opt/fpga_app/webui"]="/opt/fpga_app/webui"
   ["$SRC_BASE/var/log/fpga_app"]="/var/log/fpga_app"
   ["$SRC_BASE/mnt/backup"]="/mnt/backup"
+  ["$SRC_BASE/opt/fpga_app/venv"]="/opt/fpga_app/venv"
 )
 
 echo "Creating target directories and symlinks from $SRC_BASE..."
