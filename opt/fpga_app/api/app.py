@@ -12,4 +12,4 @@ app.register_blueprint(jobs_bp, url_prefix="/api/jobs")
 app.register_blueprint(fpga_bp, url_prefix="/api/fpga")
 app.register_blueprint(utils_bp, url_prefix="/api")
 
-app.register_blueprint(webui_bp)
+app.register_blueprint(webui_bp, url_prefix="/")
