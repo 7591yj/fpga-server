@@ -2,34 +2,30 @@
 {% block title %} - Result{% endblock %}
 {% block content %}
 
-<body>
-  <div class="section">
-    <h2 class="title is-2">Jobs Result</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th><abbr title="Bitfile name">Name</abbr></th>
-          <th><abbr title="Status">Stat</abbr></th>
-          <th><abbr title="Queued by">Usr</abbr></th>
-          <th><abbr title="Staying in the queue for">Time</abbr></th>
-          <th>Job Id</th>
-          <th>Show</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>something.bit</td>
-          <td>
-            <span class="tag is-success">Pending</span>
-          </td>
-          <td>Anon</td>
-          <td>03:08:11 Nov.12</td>
-          <td>700c5259-5b46-46de-bc82-568ce7762ab8</td>
-          <td><button class="button">Show</button></td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</body>
+<h2 class="title is-2">Jobs Result</h2>
+<table class="table">
+  <thead>
+    <tr>
+      <th><abbr title="Bitfile name">Name</abbr></th>
+      <th><abbr title="Status">Stat</abbr></th>
+      <th><abbr title="Queued by">Usr</abbr></th>
+      <th><abbr title="Staying in the queue for">Time</abbr></th>
+      <th>Job Id</th>
+      <th>Show</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>something.bit</td>
+      <td>
+        <span class="tag is-success">Pending</span>
+      </td>
+      <td>Anon</td>
+      <td>03:08:11 Nov.12</td>
+      <td>700c5259-5b46-46de-bc82-568ce7762ab8</td>
+      <td><button class="button">Show</button></td>
+    </tr>
+  </tbody>
+</table>
 
 {% endblock %}

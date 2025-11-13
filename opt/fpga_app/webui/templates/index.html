@@ -2,60 +2,56 @@
 {% block title %}{% endblock %}
 {% block content %}
 
-<body>
-  <div class="section">
-    <h1 class="title">
-      FPGA.S
-    </h1>
-    <div class="content">
-      <h1>Welcome</h1>
-      <p>
-        This is the onboard page of <a href="/">FPGA.S</a>, an integrated FPGA job
-        management interface. <br>
-        Use this panel to monitor device activity, manage job
-        submissions, and review results from completed tasks.
-      </p>
+<h1 class="title">
+  FPGA.S
+</h1>
+<div class="content">
+  <h1>Welcome</h1>
+  <p>
+    This is the onboard page of <a href="/">FPGA.S</a>, an integrated FPGA job
+    management interface. <br>
+    Use this panel to monitor device activity, manage job
+    submissions, and review results from completed tasks.
+  </p>
 
-      <h2>Navigation</h2>
-      <ul>
-        <li>
-          <a href="/stat">Stat</a>: Inspect the current FPGA device status,
-          active workloads, and queued jobs in real time. Useful for verifying
-          resource availability before adding new tasks.
-        </li>
-        <li>
-          <a href="/queue">Queue</a>: Configure and submit new jobs. Specify device
-          targets, bitstreams, and runtime parameters. Queue entries will be
-          processed sequentially(FIFO) according to availability.
-        </li>
-        <li>
-          <a href="/result">Result</a>: Retrieve logs and output data for completed
-          jobs. Each record includes timestamps, resource metrics, and compilation
-          or deployment summaries.
-        </li>
-      </ul>
+  <h2>Navigation</h2>
+  <ul>
+    <li>
+      <a href="/stat">Stat</a>: Inspect the current FPGA device status,
+      active workloads, and queued jobs in real time. Useful for verifying
+      resource availability before adding new tasks.
+    </li>
+    <li>
+      <a href="/queue">Queue</a>: Configure and submit new jobs. Specify device
+      targets, bitstreams, and runtime parameters. Queue entries will be
+      processed sequentially(FIFO) according to availability.
+    </li>
+    <li>
+      <a href="/result">Result</a>: Retrieve logs and output data for completed
+      jobs. Each record includes timestamps, resource metrics, and compilation
+      or deployment summaries.
+    </li>
+  </ul>
 
-      <h2>Instructions</h2>
-      <p>
-        Select your device at the right top of the navbar. If there is no device listed, or if the desired device is not
-        present, please click the 'refresh' button next to it.
-        If you still do not see the device even after refreshing, please contact the administrator through <a>here</a>.
-      </p>
-      <p>
-        After selecting the device, all menus will be shown according to the device. Note that only the information for
-        the selected device is shown.
-      </p>
-      <p>
-        If you wish to check ALL the job result no matter the device, please go ahead and click the 'show all' button
-        on the right top side of the result page.
-        Please do note that for other pages except for the result page, showing all devices are NOT SUPPORTED by design.
-      </p>
+  <h2>Instructions</h2>
+  <p>
+    Select your device at the right top of the navbar. If there is no device listed, or if the desired device is not
+    present, please click the 'refresh' button next to it.
+    If you still do not see the device even after refreshing, please contact the administrator through <a>here</a>.
+  </p>
+  <p>
+    After selecting the device, all menus will be shown according to the device. Note that only the information for
+    the selected device is shown.
+  </p>
+  <p>
+    If you wish to check ALL the job result no matter the device, please go ahead and click the 'show all' button
+    on the right top side of the result page.
+    Please do note that for other pages except for the result page, showing all devices are NOT SUPPORTED by design.
+  </p>
 
-      <h2>Notes</h2>
-      <p>This app uses Digilent Adept for the actual programming / running jobs.</p>
-      <p>The source code is availiable in the <a href="https://github.com/7591yj/fpga-server">GitHub repository</a>.</p>
-    </div>
-  </div>
-</body>
+  <h2>Notes</h2>
+  <p>This app uses Digilent Adept for the actual programming / running jobs.</p>
+  <p>The source code is availiable in the <a href="https://github.com/7591yj/fpga-server">GitHub repository</a>.</p>
+</div>
 
 {% endblock %}
