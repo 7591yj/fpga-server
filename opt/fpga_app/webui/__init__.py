@@ -17,7 +17,7 @@ def index():
 
 @bp.route("/stat/")
 def stat():
-    return render_template("stat.html")
+    return render_template("stat.html", jobs=jobs_dummy.jobs)
 
 
 @bp.route("/queue/")
