@@ -1,4 +1,6 @@
 {% extends "base.html" %}
+{% from "macros/tags.html" import job_stat_tag %}
+{% from "macros/tags.html" import online_stat_tag %}
 {% block title %}- Stat{% endblock %}
 {% block content %}
   <h2 class="title is-2">Device Status</h2>
@@ -9,7 +11,7 @@
           <h2 class="subtitle">Device Info</h2>
         </div>
         <div class="column">
-          <span class="tag is-success large">Online</span>
+          <td>{{ online_stat_tag("online") }}</td>
         </div>
       </div>
       <table class="table">
@@ -64,13 +66,11 @@
         </thead>
         <tbody>
           {% for job in jobs %}
-            {% if job.status == "Pending" %}
+            {% if job.status == "pending" %}
               <tr>
                 <th>{{ loop.index }}</th>
                 <td>{{ job.name }}</td>
-                <td>
-                  <span class="tag is-success">{{ job.status }}</span>
-                </td>
+                <td>{{ job_stat_tag(job.status) }}</td>
                 <td>{{ job.user }}</td>
                 <td>{{ job.time }}</td>
                 <td>{{ job.id }}</td>

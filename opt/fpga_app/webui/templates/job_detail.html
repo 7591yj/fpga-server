@@ -1,7 +1,32 @@
 {% extends "base.html" %}
+{% from "macros/tags.html" import job_stat_tag %}
 {% block title %}- Job{% endblock %}
 {% block content %}
   <h2 class="title is-2">Job</h2>
+  <table class="table">
+    <tbody>
+      <tr>
+        <th>Job ID:</th>
+        <td>{{ job.id }}</td>
+      </tr>
+      <tr>
+        <th>Name:</th>
+        <td>{{ job.name }}</td>
+      </tr>
+      <tr>
+        <th>Status</th>
+        <td>{{ job_stat_tag(job.status) }}</td>
+      </tr>
+      <tr>
+        <th>User Name:</th>
+        <td>{{ job.user }}</td>
+      </tr>
+      <tr>
+        <th>Time</th>
+        <td>{{ job.time }}</td>
+      </tr>
+    </tbody>
+  </table>
   <div class="container">
     <h2 class="subtitle">Terminal</h2>
     <div class="field is-horizontal">
