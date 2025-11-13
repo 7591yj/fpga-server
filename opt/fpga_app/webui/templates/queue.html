@@ -1,62 +1,56 @@
 {% extends "base.html" %}
-{% block title %} - Queue New Job{% endblock %}
+{% block title %}- Queue New Job{% endblock %}
 {% block content %}
-
-<h2 class="title is-2">Queue Job</h2>
-<div class="level">
-  <div class="level-left">
-    <div class="level-item">
-      <div class="file has-name">
-        <label class="file-label">
-          <input class="file-input" type="file" name="resume" />
-          <span class="file-cta">
-            <span class="file-icon">
-              <i class="fas fa-upload"></i>
+  <h2 class="title is-2">Queue Job</h2>
+  <div class="level">
+    <div class="level-left">
+      <div class="level-item">
+        <div class="file has-name">
+          <label class="file-label">
+            <input class="file-input" type="file" name="resume" />
+            <span class="file-cta">
+              <span class="file-icon">
+                <i class="fas fa-upload"></i>
+              </span>
+              <span class="file-label">Choose a file…</span>
             </span>
-            <span class="file-label"> Choose a file… </span>
-          </span>
-          <span class="file-name">lorem_ipsum.bit</span>
-        </label>
+            <span class="file-name">lorem_ipsum.bit</span>
+          </label>
+        </div>
       </div>
     </div>
-  </div>
-  <div class="level-right">
-    <button class="level-item button is-primary" id="program-btn">Program Device</button>
-  </div>
-</div>
-<div>
-  <progress class="progress is-large is-primary" value="" max="100">
-  </progress>
-  <label class="checkbox">
-    <input type="checkbox" />
-    Move to job detail page after queued
-  </label>
-</div>
-
-<section class="section">
-  <div class="mb-4">
-    <div class="icon-text">
-      <span class="icon has-text-info">
-        <i class="fas fa-info-circle"></i>
-      </span>
-      <span><strong>Information</strong></span>
+    <div class="level-right">
+      <button class="level-item button is-primary" id="program-btn">Program Device</button>
     </div>
-    <p class="block">
-      This page is ONLY for queueing jobs.
-      If you want to interactively use the terminal for the job you just queued,
-      please go to the <a href="/job">Job</a> page or check 'Move to job detail page after
-      queued' checkbox before programming the bitfile to the board.
-    </p>
   </div>
-  <div class="icon-text has-text-warning">
-    <span class="icon">
-      <i class="fas fa-exclamation-triangle"></i>
-    </span>
-    <span>
-      Please do double check what you are doing here. You may risk breaking things if you do not be careful.
-    </span>
+  <div>
+    <progress class="progress is-large is-primary" value="" max="100">
+    </progress>
+    <label class="checkbox">
+      <input type="checkbox" />
+      Move to job detail page after queued
+    </label>
   </div>
-</section>
-
-
+  <section class="section">
+    <div class="mb-4">
+      <div class="icon-text">
+        <span class="icon has-text-info">
+          <i class="fas fa-info-circle"></i>
+        </span>
+        <span><strong>Information</strong></span>
+      </div>
+      <p class="block">
+        This page is ONLY for queueing jobs.
+        If you want to interactively use the terminal for the job you just queued,
+        please go to the <a href="/job">Job</a> page or check 'Move to job detail page after
+        queued' checkbox before programming the bitfile to the board.
+      </p>
+    </div>
+    <div class="icon-text has-text-warning">
+      <span class="icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </span>
+      <span>Please do double check what you are doing here. You may risk breaking things if you do not be careful.</span>
+    </div>
+  </section>
 {% endblock %}

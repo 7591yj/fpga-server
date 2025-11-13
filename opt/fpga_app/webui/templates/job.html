@@ -1,36 +1,43 @@
 {% extends "base.html" %}
-{% block title %} - Result{% endblock %}
+{% block title %}- Result{% endblock %}
 {% block content %}
-
-<h2 class="title is-2">Jobs Result</h2>
-
-<div class="container"> 
- <table class="table">
-  <thead>
-    <tr>
-      <th><abbr title="Bitfile name">Name</abbr></th>
-      <th><abbr title="Status">Stat</abbr></th>
-      <th><abbr title="Queued by">Usr</abbr></th>
-      <th><abbr title="Staying in the queue for">Time</abbr></th>
-      <th>Job Id</th>
-      <th>Show</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for job in jobs %}
-    <tr>
-      <td>{{ job.name }}</td>
-      <td>
-        <span class="tag is-success">{{ job.status }}</span>
-      </td>
-      <td>{{ job.user }}</td>
-      <td>{{ job.time }}</td>
-      <td>{{ job.id }}</td>
-      <td><a href="{{ url_for('webui.job_detail', job_id=job.id) }}">Show</a></td>
-    </tr>
-    {% endfor %}
-  </tbody>  
- </table>
-</div>
-
+  <h2 class="title is-2">Jobs Result</h2>
+  <div class="container">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>
+            <abbr title="Bitfile name">Name</abbr>
+          </th>
+          <th>
+            <abbr title="Status">Stat</abbr>
+          </th>
+          <th>
+            <abbr title="Queued by">Usr</abbr>
+          </th>
+          <th>
+            <abbr title="Staying in the queue for">Time</abbr>
+          </th>
+          <th>Job Id</th>
+          <th>Show</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for job in jobs %}
+          <tr>
+            <td>{{ job.name }}</td>
+            <td>
+              <span class="tag is-success">{{ job.status }}</span>
+            </td>
+            <td>{{ job.user }}</td>
+            <td>{{ job.time }}</td>
+            <td>{{ job.id }}</td>
+            <td>
+              <a href="{{ url_for('webui.job_detail', job_id=job.id) }}">Show</a>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
 {% endblock %}

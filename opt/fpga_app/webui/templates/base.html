@@ -1,26 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <link rel="icon" type="image/x-icon" href="{{ url_for('webui.static', filename='assets/favicon.ico') }}">
-  <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css" rel="stylesheet" defer>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
-
-  <title>FPGA.S{% block title %}{% endblock %}</title>
-</head>
-
-<body>
-  {% include "partials/navbar.html" %}
-  <div class="hero is-fullheight-with-navbar">
-    <div class="section">
-      {% block content %}{% endblock %}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon"
+          type="image/x-icon"
+          href="{{ url_for('webui.static', filename='assets/favicon.ico') }}">
+    <link href="https://use.fontawesome.com/releases/v5.6.1/css/all.css"
+          rel="stylesheet"
+          defer>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
+    <title>FPGA.S
+      {% block title %}{% endblock %}
+    </title>
+  </head>
+  <body>
+    {% include "partials/navbar.html" %}
+    <div class="hero is-fullheight-with-navbar">
+      <div class="section">
+        {% block content %}{% endblock %}
+      </div>
+      {% include "partials/footer.html" %}
     </div>
-    {% include "partials/footer.html" %}
-  </div>
-  <script src="{{ url_for('webui.static', filename='js/index.js') }}"></script>
-</body>
-
+    <script src="{{ url_for('webui.static', filename='js/index.js') }}"></script>
+  </body>
 </html>

@@ -1,99 +1,82 @@
 {% extends "base.html" %}
-{% block title %} - Stat{% endblock %}
+{% block title %}- Stat{% endblock %}
 {% block content %}
-
-<h2 class="title is-2">Device Status</h2>
-<div class="columns is-2">
-  <div class="column is-one-third">
-    <div class="columns">
-      <div class="column">
-        <h2 class="subtitle">Device Info</h2>
+  <h2 class="title is-2">Device Status</h2>
+  <div class="columns is-2">
+    <div class="column is-one-third">
+      <div class="columns">
+        <div class="column">
+          <h2 class="subtitle">Device Info</h2>
+        </div>
+        <div class="column">
+          <span class="tag is-success large">Online</span>
+        </div>
       </div>
-      <div class="column">
-        <span class="tag is-success large">Online</span>
-      </div>
+      <table class="table">
+        <tbody>
+          <tr>
+            <th>Device:</th>
+            <td>NexysA7 (Device 0: XC7A100T)</td>
+          </tr>
+          <tr>
+            <th>Device ID:</th>
+            <td>13631093</td>
+          </tr>
+          <tr>
+            <th>Transport Type:</th>
+            <td>00020001 (USB)</td>
+          </tr>
+          <tr>
+            <th>Product Name:</th>
+            <td>Digilent Nexys A7 -100T</td>
+          </tr>
+          <tr>
+            <th>User Name:</th>
+            <td>NexysA7</td>
+          </tr>
+          <tr>
+            <th>Serial Number:</th>
+            <td>21029284063E</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <table class="table">
-      <tbody>
-        <tr>
-          <th>
-            Device:
-          </th>
-          <td>
-            NexysA7 (Device 0: XC7A100T)
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Device ID:
-          </th>
-          <td>
-            13631093
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Transport Type:
-          </th>
-          <td>
-            00020001 (USB)
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Product Name:
-          </th>
-          <td>
-            Digilent Nexys A7 -100T
-          </td>
-        </tr>
-        <tr>
-          <th>
-            User Name:
-          </th>
-          <td>
-            NexysA7
-          </td>
-        </tr>
-        <tr>
-          <th>
-            Serial Number:
-          </th>
-          <td>
-            21029284063E
-          </td>
-        </tr>
-      </tbody>
-    </table>
+    <div class="column">
+      <h2 class="subtitle">Queue List</h2>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>
+              <abbr title="Bitfile name">Name</abbr>
+            </th>
+            <th>
+              <abbr title="Status">Stat</abbr>
+            </th>
+            <th>
+              <abbr title="Queued by">Usr</abbr>
+            </th>
+            <th>
+              <abbr title="Staying in the queue for">Time</abbr>
+            </th>
+            <th>Job Id</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for i, job in enumerate(jobs, start=1) %}
+            <tr>
+              <th>{{ i }}</th>
+              <td>{{ job.name }}</td>
+              <td>
+                <span class="tag is-success">{{ job.status }}</span>
+              </td>
+              <td>{{ job.user }}</td>
+              <td>{{ job.time }}</td>
+              <td>{{ job.id }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
-  <div class="column">
-    <h2 class="subtitle">Queue List</h2>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th><abbr title="Bitfile name">Name</abbr></th>
-          <th><abbr title="Status">Stat</abbr></th>
-          <th><abbr title="Queued by">Usr</abbr></th>
-          <th><abbr title="Staying in the queue for">Time</abbr></th>
-          <th>Job Id</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>1</th>
-          <td>something.bit</td>
-          <td>
-            <span class="tag is-success">Pending</span>
-          </td>
-          <td>Anon</td>
-          <td>03:08:11 Nov.12</td>
-          <td>700c5259-5b46-46de-bc82-568ce7762ab8</td>
-        </tr>
-
-      </tbody>
-    </table>
-  </div>
-</div>
-
 {% endblock %}
