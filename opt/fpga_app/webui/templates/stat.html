@@ -4,17 +4,17 @@
 {% block title %}- Stat{% endblock %}
 {% block content %}
   <h2 class="title is-2">Device Status</h2>
-  <div class="columns is-2">
+  <div class="columns is-4">
     <div class="column is-one-third">
-      <div class="columns">
-        <div class="column">
-          <h2 class="subtitle">Device Info</h2>
+      <div class="level">
+        <div class="level-left">
+          <h2 class="subtitle level-item">Device Info</h2>
         </div>
-        <div class="column">
-          <td>{{ online_stat_tag("online") }}</td>
+        <div class="level-right">
+          <p class="level-item">{{ online_stat_tag("online") }}</p>
         </div>
       </div>
-      <table class="table">
+      <table class="table" style="width: 100%;">
         <tbody>
           <tr>
             <th>Device:</th>
@@ -45,7 +45,7 @@
     </div>
     <div class="column">
       <h2 class="subtitle">Queue List</h2>
-      <table class="table">
+      <table class="table" style="width:100%">
         <thead>
           <tr>
             <th>#</th>
