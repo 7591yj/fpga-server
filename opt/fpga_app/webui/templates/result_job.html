@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %} - Job{% endblock %}
+{% block content %}
+
+<h2 class="title is-2">Job</h2>
+
+<div class="container">
+  <h2 class="subtitle">Terminal</h2>
+  <div class="field is-horizontal">
+    <div class="field-body">
+      <div class="field">
+        <p class="control">
+          <input class="input" />
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <pre class="mt-3" id="log-output">
+    025-11-13 18:37:22,111 INFO success: fpga-server entered RUNNING state, process has stayed up for > than 1
+    seconds
+    (startsecs)
+    2025-11-13 18:37:22,112 INFO success: fpga-worker entered RUNNING state, process has stayed up for > than 1
+    seconds
+    (startsecs)
+  </pre>
+</div>
+
+<section class="section">
+  <div class="icon-text has-text-warning">
+    <span class="icon">
+      <i class="fas fa-exclamation-triangle"></i>
+    </span>
+    <span>
+      Please do double check what you are doing here. You may risk breaking things if you do not be careful.
+    </span>
+  </div>
+</section>
+
+{% endblock %}
