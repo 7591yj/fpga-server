@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}{% endblock %}
 {% block content %}
-  <h1 class="title">FPGA.S</h1>
+  <h1 class="title">Onboarding Document</h1>
   <div class="content">
     <h1>Welcome</h1>
     <p>
@@ -24,17 +24,41 @@
         processed sequentially(FIFO) according to availability.
       </li>
       <li>
-        <a href="/result">Result</a>: Retrieve logs and output data for completed
-        jobs. Each record includes timestamps, resource metrics, and compilation
-        or deployment summaries.
+        <a href="/job">Job</a>: Retrieve logs and output data for each jobs.
+        Each record includes timestamps, resource metrics, and compilation or deployment summaries.
+        You will be able to see detailed logs and communicate with the job using the terminal
+        when you click the 'Show' link of each job.
       </li>
     </ul>
     <h2>Instructions</h2>
     <p>
-      Select your device at the right top of the navbar. If there is no device listed, or if the desired device is not
-      present, please click the 'refresh' button next to it.
-      If you still do not see the device even after refreshing, please contact the administrator through <a>here</a>.
+      Select your device at the dropdown right top of the navbar.
+      If there is no device listed, or if the desired device is not present,
+      please click the 'refresh' button next to it. If you still do not see the device
+      even after refreshing, please contact the administrator through <a>here</a>.
     </p>
+    <p>
+      Each dot in the dropdown represents specific status the device is in. It is highly recommended to use
+      the green-dotted device. The specific meaning for each dot color follows.
+    </p>
+    <ul>
+      <li>
+        <span class="has-text-success">Green</span>: indicates there are none/only a number of jobs waiting.
+        The job will have no to minimal wait time before it gets processed.
+      </li>
+      <li>
+        <span class="has-text-warning">Yellow</span>: indicates there are few jobs waiting, and it may take a
+        small amount of time before processing the job.
+      </li>
+      <li>
+        <span class="has-text-danger">Red</span>: indicates there are many jobs waiting, and it may take a lot
+        of time before processing the job.
+      </li>
+      <li>
+        <span class="has-text-white">White</span>: indicates the server cannot get the information for that device.
+        If the white dot persists, please contact administrator <a>here</a>.
+      </li>
+    </ul>
     <p>
       After selecting the device, all menus will be shown according to the device. Note that only the information for
       the selected device is shown.
@@ -43,6 +67,11 @@
       If you wish to check ALL the job result no matter the device, please go ahead and click the 'show all' button
       on the right top side of the result page.
       Please do note that for other pages except for the result page, showing all devices are NOT SUPPORTED by design.
+    </p>
+    <p>
+      If you are willing to log out, click your username in the namespace(next to 'Logged in as').
+      A modal will pop up; click 'Log out'.
+      Or, you can click <a href="/logout">here</a>.
     </p>
     <h2>Notes</h2>
     <p>This app uses Digilent Adept for the actual programming / running jobs.</p>
