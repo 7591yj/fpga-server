@@ -24,6 +24,14 @@ def queue():
     return render_template("queue.html")
 
 
-@bp.route("/result/")
+@bp.route("/job/")
 def result():
-    return render_template("result.html")
+    return render_template("job.html")
+
+
+@bp.route("/job/<job_id>")
+def result_job(job_id):
+    # TODO: remove job data and get actual data retrieval
+    # pretend data retrieval
+    job_data = {"id": job_id, "status": "completed", "score": 92}
+    return render_template("job_detail.html", job=job_data)
