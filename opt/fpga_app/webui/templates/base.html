@@ -16,12 +16,12 @@
     </title>
   </head>
   <body>
-    {% include "partials/navbar.html" %}
+    {% include "partials/_navbar.html" %}
     <div class="hero is-fullheight-with-navbar">
       <div class="section">
         {% block content %}{% endblock %}
       </div>
-      {% include "partials/footer.html" %}
+      {% include "partials/_footer.html" %}
     </div>
     <script src="{{ url_for('webui.static', filename='js/index.js') }}"></script>
   </body>

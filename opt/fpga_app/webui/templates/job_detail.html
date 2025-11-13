@@ -2,7 +2,7 @@
 {% from "macros/tags.html" import job_stat_tag %}
 {% block title %}- Job{% endblock %}
 {% block content %}
-  <h2 class="title is-2">Job</h2>
+  <h2 class="title is-2">Job Detail</h2>
   <table class="table">
     <tbody>
       <tr>
@@ -48,11 +48,6 @@
   </pre>
   </div>
   <section class="section">
-    <div class="icon-text has-text-warning">
-      <span class="icon">
-        <i class="fas fa-exclamation-triangle"></i>
-      </span>
-      <span>Please do double check what you are doing here. You may risk breaking things if you do not be careful.</span>
-    </div>
+    {% include "partials/_warning.html" %}
   </section>
 {% endblock %}
