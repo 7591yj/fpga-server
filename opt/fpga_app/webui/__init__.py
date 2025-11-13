@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template
+from webui.static.assets import jobs_dummy
 
 bp = Blueprint(
     "webui",
@@ -25,12 +26,12 @@ def queue():
 
 
 @bp.route("/job/")
-def result():
-    return render_template("job.html")
+def job():
+    return render_template("job.html", jobs=jobs_dummy.jobs)
 
 
 @bp.route("/job/<job_id>")
-def result_job(job_id):
+def job_detail(job_id):
     # TODO: remove job data and get actual data retrieval
     # pretend data retrieval
     job_data = {"id": job_id, "status": "completed", "score": 92}
