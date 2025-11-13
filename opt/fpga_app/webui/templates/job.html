@@ -3,7 +3,9 @@
 {% block content %}
 
 <h2 class="title is-2">Jobs Result</h2>
-<table class="table">
+
+<div class="container"> 
+ <table class="table">
   <thead>
     <tr>
       <th><abbr title="Bitfile name">Name</abbr></th>
@@ -15,17 +17,20 @@
     </tr>
   </thead>
   <tbody>
+    {% for job in jobs %}
     <tr>
-      <td>something.bit</td>
+      <td>{{ job.name }}</td>
       <td>
-        <span class="tag is-success">Pending</span>
+        <span class="tag is-success">{{ job.status }}</span>
       </td>
-      <td>Anon</td>
-      <td>03:08:11 Nov.12</td>
-      <td>700c5259-5b46-46de-bc82-568ce7762ab8</td>
-      <td><button class="button">Show</button></td>
+      <td>{{ job.user }}</td>
+      <td>{{ job.time }}</td>
+      <td>{{ job.id }}</td>
+      <td><a href="{{ url_for('webui.job_detail', job_id=job.id) }}">Show</a></td>
     </tr>
-  </tbody>
-</table>
+    {% endfor %}
+  </tbody>  
+ </table>
+</div>
 
 {% endblock %}
