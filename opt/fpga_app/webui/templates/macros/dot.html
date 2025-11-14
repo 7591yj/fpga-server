@@ -1,0 +1,19 @@
+{% macro queue_dot(status) -%}
+  {% if status == 0 %}
+    <span class="icon is-small has-text-success">
+      <i class="fas fa-circle"></i>
+    </span>
+  {% elif status == 1 %}
+    <span class="icon is-small has-text-warning">
+      <i class="fas fa-circle"></i>
+    </span>
+  {% elif status == 2 %}
+    <span class="icon is-small has-text-danger">
+      <i class="fas fa-circle"></i>
+    </span>
+  {% else %}
+    <span class="icon is-small">
+      <i class="fas fa-circle"></i>
+    </span>
+  {% endif %}
+{%- endmacro %}
