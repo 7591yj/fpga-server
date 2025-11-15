@@ -8,6 +8,7 @@ SRC_BASE="/home/${SUDO_USER:-$USER}/fpga-server"
 # Expected mapping: local project dir → system target
 declare -A TARGETS=(
   ["$SRC_BASE/opt/fpga_app/api"]="/opt/fpga_app/api"
+  ["$SRC_BASE/opt/fpga_app/auth"]="/opt/fpga_app/auth"
   ["$SRC_BASE/opt/fpga_app/config"]="/opt/fpga_app/config"
   ["$SRC_BASE/opt/fpga_app/queue"]="/opt/fpga_app/queue"
   ["$SRC_BASE/opt/fpga_app/scripts"]="/opt/fpga_app/scripts"

@@ -4,14 +4,12 @@ from flask import Blueprint, request, jsonify
 import secrets
 import time
 from functools import wraps
+from auth.session_store import get_session, save_session, delete_session
 
 
 auth_bp = Blueprint("auth", __name__)
 
 DB_PATH = "/opt/fpga_app/config/jobs.db"
-
-# In‑memory session store (replace with JWT or Redis in production)
-sessions = {}
 
 
 def db():
@@ -22,7 +20,7 @@ def require_auth(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         token = request.headers.get("X-Auth-Token")
-        if token not in sessions:
+        if not get_session(token):
             return jsonify({"error": "unauthorized"}), 403
         return f(*args, **kwargs)
 
@@ -48,5 +46,5 @@ def login():
         return jsonify({"error": "invalid login"}), 401
 
     token = secrets.token_hex(32)
-    sessions[token] = {"user": username, "ts": time.time()}
+    save_session(token, username)
     return jsonify({"status": "ok", "token": token})
