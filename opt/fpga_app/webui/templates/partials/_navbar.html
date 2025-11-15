@@ -22,7 +22,16 @@
     <div class="navbar-item">
       <div>
         <span>Logged in as: </span>
-        <strong>Anon</strong>
+        <a href="#" id="logout-a"><strong>Anon</strong></a>
+        <div class="modal" id="logout-modal">
+          <div class="modal-background"> </div>
+          <div class="modal-content">
+            <h2 class="subtitle">Log out?</h2>
+            <button class="button is-primary">Confirm</button>
+            <button class="button">Cancel</button>
+          </div>
+          <button class="modal-close is-large" aria-label="close"></button>
+        </div>
       </div>
       <div class="dropdown" id="dropdown">
         <div class="dropdown-trigger">

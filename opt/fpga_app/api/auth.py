@@ -2,9 +2,8 @@ import bcrypt
 import sqlite3
 from flask import Blueprint, request, jsonify
 import secrets
-import time
 from functools import wraps
-from auth.session_store import get_session, save_session, delete_session
+from auth.session_store import get_session, save_session
 
 
 auth_bp = Blueprint("auth", __name__)
