@@ -38,5 +38,24 @@
         {% endfor %}
       </tbody>
     </table>
+    <label class="checkbox">
+      <input type="checkbox" />
+      Show All
+    </label>
   </div>
+  <section class="section">
+    <div class="mb-4">
+      <div class="icon-text">
+        <span class="icon has-text-info">
+          <i class="fas fa-info-circle"></i>
+        </span>
+        <span><strong>Information</strong></span>
+      </div>
+      <p class="block">
+        Check the 'Show All' button to query every job no matter the device.
+        <br />
+        Please use this only when needed, as querying big amount of jobs might slow down the server when repeated often.
+      </p>
+    </div>
+  </section>
 {% endblock %}
