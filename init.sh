@@ -52,7 +52,8 @@ read -p "Do you want to set up and start supervisord? (y/n) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   echo "Setting up supervisord..."
-  cp supervisord.conf /etc/supervisord.d/fpga-server.conf
+  mkdir -p /etc/supervisord.d
+  cp supervisord.conf /etc/supervisord.d/fpga-server.ini
   systemctl enable supervisord
   systemctl start supervisord
   echo "supervisord setup complete."

@@ -11,7 +11,8 @@ dnf install -y \
   sqlite \
   jq \
   usbutils \
-  avahi-libs
+  avahi-libs \
+  supervisor
 
 if systemctl list-unit-files | grep -q '^firewalld\.service'; then
   sudo systemctl disable firewalld --now
