@@ -24,7 +24,7 @@ echo "Installing Digilent Adept Runtime and Utilities..."
 
 dnf install -y \
   "$TARGET_DIR/$RUNTIME_FILE" \
-  "$TARGET_DIR/$RUNTIME_FILE"
+  "$TARGET_DIR/$UTILITIES_FILE"
 
 echo "Testing djtgcfg --version..."
 
