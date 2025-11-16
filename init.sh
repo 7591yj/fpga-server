@@ -44,8 +44,8 @@ fi
 run_script "install-dnf-deps.sh"
 run_script "install-adept.sh"
 run_script_user "install-pip-deps.sh"
-run_script_path "opt/fpga_app/scripts/init_db.sh"
 run_script_user "create-symlink.sh"
+run_script_path "opt/fpga_app/scripts/init_db.sh"
 
 # ask about supervisord
 read -p "Do you want to set up and start supervisord? (y/n) " -n 1 -r
