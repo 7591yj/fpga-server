@@ -4,6 +4,11 @@
   <h1 class="title">Onboarding Document</h1>
   <div class="content">
     <h1>Welcome</h1>
+    <blockquote>
+      This app is designed to be used in dark mode.
+      There is still support for light mode, but there might be some
+      UI-related problems here and there while using light mode.
+    </blockquote>
     <p>
       This is the onboard page of <a href="/">FPGA.S</a>, an integrated FPGA job
       management interface.
@@ -55,8 +60,9 @@
         of time before processing the job.
       </li>
       <li>
-        <span class="has-text-white">White</span>: indicates the server cannot get the information for that device.
-        If the white dot persists, please contact administrator <a>here</a>.
+        <span id="queue-dot-unknown">White(Black, if you are using light mode)</span>
+        : indicates the server cannot get the information for that device.
+        If the status persists, please contact administrator <a>here</a>.
       </li>
     </ul>
     <p>
