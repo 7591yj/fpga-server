@@ -20,6 +20,7 @@
             <abbr title="Staying in the queue for">Time</abbr>
           </th>
           <th>Job Id</th>
+          <th>Cancel</th>
           <th>Show</th>
         </tr>
       </thead>
@@ -31,6 +32,20 @@
             <td>{{ job.user }}</td>
             <td>{{ job.time }}</td>
             <td>{{ job.id }}</td>
+            <td>
+              <a class="has-text-danger" href="#" id="job-cancel-a">Cancel</a>
+              <div class="modal" id="job-cancel-modal">
+                <div class="modal-background"></div>
+                <div class="modal-content">
+                  <div class="box">
+                    <h2 class="subtitle">Cancel Job?</h2>
+                    <button class="button is-primary">Confirm</button>
+                    <button class="button">Cancel</button>
+                  </div>
+                </div>
+                <button class="modal-close is-large" aria-label="close"></button>
+              </div>
+            </td>
             <td>
               <a href="{{ url_for('webui.job_detail', job_id=job.id) }}">Show</a>
             </td>
@@ -56,6 +71,12 @@
         <br />
         Please use this only when needed, as querying big amount of jobs might slow down the server when repeated often.
       </p>
+    </div>
+    <div class="icon-text has-text-warning">
+      <span class="icon">
+        <i class="fas fa-exclamation-triangle"></i>
+      </span>
+      <span>Please do double check before job cancelation.</span>
     </div>
   </section>
 {% endblock %}
