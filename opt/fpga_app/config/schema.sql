@@ -8,25 +8,10 @@ CREATE TABLE IF NOT EXISTS users (
   ts_created DATETIME DEFAULT CURRENT_TIMESTAMP
 );
 
--- DEVICES TABLE
-CREATE TABLE IF NOT EXISTS devices (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  device_name TEXT NOT NULL,
-  device_id TEXT NOT NULL UNIQUE,
-  transport_type TEXT,
-  product_name TEXT,
-  serial_number TEXT,
-  owner_id INTEGER REFERENCES users(id),
-  current_job_id TEXT REFERENCES jobs(id),
-  ts_last_heartbeat DATETIME,
-  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-
 -- JOBS TABLE
 CREATE TABLE IF NOT EXISTS jobs (
   id TEXT PRIMARY KEY,
-  user_id INTEGER REFERENCES users(id),
-  device_id TEXT REFERENCES devices(device_id),
+  user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   spec TEXT,
   status TEXT CHECK (
     status IN ('queued', 'running', 'finished', 'cancelled', 'error')
@@ -41,21 +26,35 @@ CREATE TABLE IF NOT EXISTS jobs (
   cancelled_by INTEGER REFERENCES users(id)
 );
 
--- JOB SESSIONS (PTY INTERACTION)
+-- DEVICES TABLE
+CREATE TABLE IF NOT EXISTS devices (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  device_name TEXT NOT NULL,
+  device_id TEXT NOT NULL UNIQUE,
+  transport_type TEXT,
+  product_name TEXT,
+  serial_number TEXT,
+  owner_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+  current_job_id TEXT REFERENCES jobs(id),
+  ts_last_heartbeat DATETIME,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- JOB_SESSIONS TABLE (PTY INTERACTION)
 CREATE TABLE IF NOT EXISTS job_sessions (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
-  job_id TEXT REFERENCES jobs(id),
-  session_token TEXT UNIQUE,
+  job_id TEXT REFERENCES jobs(id) ON DELETE CASCADE,
+  session_token TEXT NOT NULL UNIQUE,
   ts_created DATETIME DEFAULT CURRENT_TIMESTAMP,
   ts_last_activity DATETIME
 );
 
 -- INDEXES
 CREATE INDEX IF NOT EXISTS idx_jobs_device_status 
-  ON jobs(device_id, status);
+  ON jobs(user_id, status);
 
 CREATE INDEX IF NOT EXISTS idx_jobs_queue_position 
-  ON jobs(device_id, queue_position);
+  ON jobs(user_id, queue_position);
 
 CREATE INDEX IF NOT EXISTS idx_jobs_user 
   ON jobs(user_id);
