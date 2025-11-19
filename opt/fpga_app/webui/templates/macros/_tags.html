@@ -1,0 +1,24 @@
+{% macro job_stat_tag(status) -%}
+  {% if status == 'queued' %}
+    <span class="tag is-primary">Queued</span>
+  {% elif status == 'running' %}
+    <span class="tag is-info">Running</span>
+  {% elif status == 'finished' %}
+    <span class="tag is-success">Finished</span>
+  {% elif status == 'failed' or status == 'cancelled' or status == 'error' %}
+    <span class="tag is-danger">{{ status|capitalize }}</span>
+  {% else %}
+    <span class="tag is-dark">{{ status|capitalize }}</span>
+  {% endif %}
+{%- endmacro %}
+{% macro online_stat_tag(status) -%}
+  {% if status == 'online' %}
+    <span class="tag is-success">Online</span>
+  {% elif status == 'offline' %}
+    <span class="tag is-danger">Offline</span>
+  {% elif status == 'unknown' %}
+    <span class="tag is-warning">Unknown</span>
+  {% else %}
+    <span class="tag is-dark">{{ status|capitalize }}</span>
+  {% endif %}
+{%- endmacro %}

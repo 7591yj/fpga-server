@@ -1,6 +1,7 @@
 from functools import wraps
 import secrets
 import bcrypt
+import json
 
 from flask import (
     Blueprint,
@@ -16,7 +17,20 @@ from api.auth import db
 from auth.session_store import get_session, save_session, delete_session
 
 
-jobs = jobs_dummy.jobs
+jobs_raw = json.loads(jobs_dummy.jobs)["jobs"]
+
+jobs = []
+for j in jobs_raw:
+    spec = json.loads(j["spec"]) if j["spec"] else {}
+    jobs.append(
+        {
+            "id": j["id"],
+            "name": spec.get("name"),
+            "status": j["status"],
+            "user": j["user_id"],
+            "time": j["ts_created"],
+        }
+    )
 
 
 def ui_login_required(f):
@@ -82,14 +96,15 @@ def login():
 
         with db() as conn:
             row = conn.execute(
-                "SELECT password_hash FROM users WHERE username=?", (username,)
+                "SELECT password_hash, id FROM users WHERE username=?", (username,)
             ).fetchone()
 
         if not row or not bcrypt.checkpw(password.encode(), row[0]):
             return render_template("login.html", error="Invalid username or password")
 
         token = secrets.token_hex(32)
-        save_session(token, username)
+        id = row[1]
+        save_session(token, username, id)
 
         resp = make_response(redirect(url_for("webui.index")))
         resp.set_cookie("auth_token", token, httponly=True, secure=False, path="/")

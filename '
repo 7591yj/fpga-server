@@ -1,14 +1,14 @@
 {% macro job_stat_tag(status) -%}
-  {% if status == 'pending' %}
+  {% if status == 'queued' %}
     <span class="tag is-primary">Pending</span>
   {% elif status == 'running' %}
     <span class="tag is-info">Running</span>
-  {% elif status == 'failed' %}
-    <span class="tag is-danger">Failed</span>
+  {% elif status == 'failed' or status == 'canceled' %}
+    <span class="tag is-danger">{{ status|capitalize }}</span>
   {% elif status == 'completed' %}
     <span class="tag is-success">Completed</span>
   {% else %}
-    <span class="tag is-dark">{{ job.status|capitalize }}</span>
+    <span class="tag is-dark">{{ status|capitalize }}</span>
   {% endif %}
 {%- endmacro %}
 {% macro online_stat_tag(status) -%}
@@ -19,6 +19,6 @@
   {% elif status == 'unknown' %}
     <span class="tag is-warning">Unknown</span>
   {% else %}
-    <span class="tag is-dark">{{ job.status|capitalize }}</span>
+    <span class="tag is-dark">{{ status|capitalize }}</span>
   {% endif %}
 {%- endmacro %}
