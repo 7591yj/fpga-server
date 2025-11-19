@@ -50,27 +50,39 @@
         <div class="dropdown-menu" id="dropdown-menu" role="menu">
           <div class="dropdown-content">
             <a href="#" class="dropdown-item is-active">
-              <div class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center">
+              <div class="is-flex is-flex-direction-row is-justify-content-space-between is-align-items-center">
                 Device 0
-                {{ queue_dot(0)}}
+                <div class="is-flex is-flex-direction-row is-justify-content-space-around is-align-items-center">
+                  <span>0</span>
+                  {{ queue_dot(0)}}
+                </div>
               </div>
             </a>
             <a href="#" class="dropdown-item">
               <div class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center">
                 Device 1
-                {{ queue_dot(2)}}
+                <div class="is-flex is-flex-direction-row is-justify-content-space-around is-align-items-center">
+                  <span>3</span>
+                  {{ queue_dot(1) }}
+                </div>
               </div>
             </a>
             <a href="#" class="dropdown-item">
               <div class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center">
                 Device 2
-                {{ queue_dot(1)}}
+                <div class="is-flex is-flex-direction-row is-justify-content-space-around is-align-items-center">
+                  <span>8</span>
+                  {{ queue_dot(2) }}
+                </div>
               </div>
             </a>
             <a href="#" class="dropdown-item">
               <div class="is-flex is-flex-direction-row is-justify-content-space-between is-align-content-center">
                 Device 3
-                {{ queue_dot(3)}}
+                <div class="is-flex is-flex-direction-row is-justify-content-space-around is-align-items-center">
+                  <span></span>
+                  {{ queue_dot() }}
+                </div>
               </div>
             </a>
             <hr class="dropdown-divider" />
