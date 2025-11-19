@@ -37,7 +37,7 @@ def login():
 
     with db() as conn:
         cur = conn.execute(
-            "SELECT password_hash FROM users WHERE username=?", (username,)
+            "SELECT password_hash, id FROM users WHERE username=?", (username,)
         )
         row = cur.fetchone()
 
@@ -45,5 +45,6 @@ def login():
         return jsonify({"error": "invalid login"}), 401
 
     token = secrets.token_hex(32)
-    save_session(token, username)
-    return jsonify({"status": "ok", "token": token})
+    id = row[1]
+    save_session(token, username, id)
+    return jsonify({"status": "ok", "token": token, "id": id})

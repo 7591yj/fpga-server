@@ -15,27 +15,28 @@ def init_sessions_table():
             CREATE TABLE IF NOT EXISTS sessions (
                 token TEXT PRIMARY KEY,
                 username TEXT NOT NULL,
+                id INTEGER,
                 ts REAL
             )
         """)
 
 
-def save_session(token, username):
+def save_session(token, username, id):
     with _db() as conn:
         conn.execute(
-            "INSERT OR REPLACE INTO sessions (token, username, ts) VALUES (?, ?, ?)",
-            (token, username, time.time()),
+            "INSERT OR REPLACE INTO sessions (token, username, id, ts) VALUES (?, ?, ?, ?)",
+            (token, username, id, time.time()),
         )
 
 
 def get_session(token):
     with _db() as conn:
         row = conn.execute(
-            "SELECT username, ts FROM sessions WHERE token=?", (token,)
+            "SELECT username, id, ts FROM sessions WHERE token=?", (token,)
         ).fetchone()
     if not row:
         return None
-    return {"user": row[0], "ts": row[1]}
+    return {"user": row[0], "id": row[1], "ts": row[2]}
 
 
 def delete_session(token):
