@@ -23,7 +23,8 @@
       </div>
       {% include "partials/_footer.html" %}
     </div>
-    <script src="{{ url_for('webui.static', filename='js/index.js') }}"></script>
-    <script src="{{ url_for('webui.static', filename='js/prefers-color-scheme.js') }}"></script>
   </body>
+  {% block scripts %}{% endblock %}
+  <script src="{{ url_for('webui.static', filename='js/index.js') }}"></script>
+  <script src="{{ url_for('webui.static', filename='js/prefers-color-scheme.js') }}"></script>
 </html>
