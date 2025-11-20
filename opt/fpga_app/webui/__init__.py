@@ -54,6 +54,17 @@ bp = Blueprint(
 )
 
 
+@bp.context_processor
+def inject_user():
+    token = request.cookies.get("auth_token")
+    username = None
+    if token:
+        session_data = get_session(token)
+        if session_data:
+            username = session_data.get("user")
+    return dict(username=username)
+
+
 @bp.route("/")
 @ui_login_required
 def index():
