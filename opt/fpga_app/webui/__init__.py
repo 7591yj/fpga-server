@@ -2,6 +2,7 @@ from functools import wraps
 import secrets
 import bcrypt
 import json
+import requests
 
 from flask import (
     Blueprint,
@@ -16,7 +17,7 @@ from webui.static.assets import jobs_dummy
 from api.auth import db
 from auth.session_store import get_session, save_session, delete_session
 
-
+device_id = "device-001"
 jobs_raw = json.loads(jobs_dummy.jobs)["jobs"]
 
 jobs = []
@@ -62,7 +63,11 @@ def index():
 @bp.route("/stat/")
 @ui_login_required
 def stat():
-    return render_template("stat.html", jobs=jobs)
+    device_url = request.host_url.rstrip("/") + f"/api/devices/{device_id}"
+    device_data = requests.get(device_url).json()
+    return render_template(
+        "stat.html", device=device_data, device_id=device_id, jobs=jobs
+    )
 
 
 @bp.route("/queue/")

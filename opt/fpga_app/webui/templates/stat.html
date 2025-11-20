@@ -18,27 +18,27 @@
         <tbody>
           <tr>
             <th>Device:</th>
-            <td>NexysA7 (Device 0: XC7A100T)</td>
+            <td>{{ device.device_name }} ({{ device.device_id }})</td>
           </tr>
           <tr>
             <th>Device ID:</th>
-            <td>13631093</td>
+            <td>{{ device.device_id }}</td>
           </tr>
           <tr>
             <th>Transport Type:</th>
-            <td>00020001 (USB)</td>
+            <td>{{ device.transport_type }}</td>
           </tr>
           <tr>
             <th>Product Name:</th>
-            <td>Digilent Nexys A7 -100T</td>
+            <td>{{ device.product_name }}</td>
           </tr>
           <tr>
             <th>User Name:</th>
-            <td>NexysA7</td>
+            <td>{{ device.device_name }}</td>
           </tr>
           <tr>
             <th>Serial Number:</th>
-            <td>21029284063E</td>
+            <td>{{ device.serial_number }}</td>
           </tr>
         </tbody>
       </table>
