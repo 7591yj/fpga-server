@@ -1,6 +1,7 @@
 import os
 import subprocess
 from flask import Blueprint, request, jsonify
+from werkzeug.utils import secure_filename
 
 fpga_bp = Blueprint("fpga", __name__)
 
@@ -28,11 +29,10 @@ def upload_bitfile():
     if not allowed_file(file.filename):
         return jsonify({"error": "invalid file type"}), 400
 
-    dest = os.path.join(UPLOAD_DIR, os.path.basename(file.filename))
-    file.save(dest)
-
+    dest = os.path.join(UPLOAD_DIR, secure_filename(file.filename))
     if os.path.getsize(dest) < 1024:
         return jsonify({"error": "file too small; invalid bitstream"}), 400
+    file.save(dest)
 
     return jsonify({"status": "uploaded", "path": dest})
 

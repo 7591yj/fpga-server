@@ -47,7 +47,7 @@ def submit_job():
             VALUES (?, ?, ?, ?, 'queued',
                     COALESCE((SELECT MAX(queue_position) + 1 FROM jobs WHERE device_id = ?), 1))
             """,
-            (job_id, user_id, device_id, spec, device_id),
+            (job_id, user_id, device_id, spec),
         )
 
         conn.commit()
