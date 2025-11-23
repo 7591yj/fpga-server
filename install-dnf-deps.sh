@@ -12,7 +12,13 @@ dnf install -y \
   jq \
   usbutils \
   avahi-libs \
-  supervisor
+  supervisor \
+  libX11 \
+  libXext \
+  libXrender \
+  ncurses-compat-libs \
+  pixman \
+  libpng
 
 if systemctl list-unit-files | grep -q '^firewalld\.service'; then
   sudo systemctl disable firewalld --now

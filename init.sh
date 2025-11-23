@@ -42,7 +42,7 @@ fi
 
 # run installation scripts
 run_script "install-dnf-deps.sh"
-run_script "install-adept.sh"
+run_script "install-vivado-deps.sh"
 run_script_user "install-pip-deps.sh"
 run_script_user "create-symlink.sh"
 run_script_path "opt/fpga_app/scripts/init_db.sh"

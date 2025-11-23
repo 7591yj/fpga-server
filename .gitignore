@@ -278,4 +278,8 @@ pyrightconfig.json
 
 **bruno**
 **.db
-**.rpm
+**.bit**
+
+# Vivado logs
+**Vivado**.tar
+**.jou
