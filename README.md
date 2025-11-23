@@ -29,7 +29,13 @@ To set up `fpga-server`, follow these steps:
    cd fpga-server
    ```
 
-2. **Run the script:**
+2. Download Vivado Lab Edition installation file from [here](https://www.xilinx.com/support/download.html)
+
+   > You might need AMD account to download the file.
+
+   Place the file in the same directory - inside `fpga-server`.
+
+3. **Run the script:**
 
    ```bash
    sudo ./init.sh
@@ -44,9 +50,11 @@ To set up `fpga-server`, follow these steps:
 ```bash
 # Install system dependencies
 ./install-dnf-deps.sh
+# Install Vivado Lab Edition
+./install-vivado-deps.sh
 # Install Python dependencies
 ./install-pip-deps.sh
-# This is typically handled by install-pip-deps.sh, but if not, you might need:
+# This is typically handled by install-pip-deps.sh, but if you would like:
 python3 -m venv opt/fpga_app/venv
 source opt/fpga_app/venv/bin/activate
 pip install -r opt/fpga_app/requirements.txt
