@@ -31,10 +31,10 @@ CREATE TABLE jobs (
 CREATE TABLE IF NOT EXISTS devices (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   device_name TEXT NOT NULL,
-  device_id TEXT NOT NULL UNIQUE,
+  device_id TEXT NOT NULL,
   transport_type TEXT,
   product_name TEXT,
-  serial_number TEXT,
+  serial_number TEXT NOT NULL UNIQUE,
   current_job_id TEXT REFERENCES jobs(id), -- idle when is NULL
   ts_last_heartbeat DATETIME,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
