@@ -15,7 +15,7 @@ via USB.
 It provides a web interface and an API to manage FPGA programming, job queues,
 and user authentication.
 
-The server is only tested on Fedora 41/42 Workstation. Other OS/distros were not
+The server is only tested on Fedora 41/42 Server. Other OS/distros were not
 tested.
 
 ## Installation
@@ -29,7 +29,7 @@ To set up `fpga-server`, follow these steps:
    cd fpga-server
    ```
 
-2. Download Vivado Lab Edition installation file from [here](https://www.xilinx.com/support/download.html)
+2. **Download Vivado Lab Edition installation file from [here](https://www.xilinx.com/support/download.html)**
 
    > You might need AMD account to download the file.
 
@@ -44,6 +44,9 @@ To set up `fpga-server`, follow these steps:
    Running the script will install system dependencies, install python dependencies,
    set up virtual environment, initialize the database, create symlinks,
    and configure Supervisor(optional) and set up Tailscale(optional).
+
+   > Please understand that we internally moved to use Cloudflare Zero Trust;
+   > Tailscale may not work as expected.
 
    If you need to run part of the scripts manually, use other scripts provided.
 
