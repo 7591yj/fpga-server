@@ -2,8 +2,7 @@
 import sqlite3
 from datetime import datetime
 
-from queue.cli_wrapper import find_devices
-
+from jobqueue.cli_wrapper import find_devices
 
 DB_PATH = "/opt/fpga_app/config/jobs.db"
 
