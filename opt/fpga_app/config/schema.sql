@@ -35,7 +35,6 @@ CREATE TABLE IF NOT EXISTS devices (
   transport_type TEXT,
   product_name TEXT,
   serial_number TEXT,
-  owner_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
   current_job_id TEXT REFERENCES jobs(id), -- idle when is NULL
   ts_last_heartbeat DATETIME,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -60,5 +59,3 @@ CREATE INDEX IF NOT EXISTS idx_jobs_queue_position
 CREATE INDEX IF NOT EXISTS idx_jobs_user 
   ON jobs(user_id);
 
-CREATE INDEX IF NOT EXISTS idx_devices_owner 
-  ON devices(owner_id);
