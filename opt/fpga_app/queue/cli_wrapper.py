@@ -1,14 +1,14 @@
 import subprocess
 
 
-def program_fpga(port, bitfile):
+def program_fpga(serial, bitfile):
     cmd = [
         "vivado_lab",
         "-mode",
         "batch",
         "-source",
-        "program_fpga.tcl",
-        f"PORT={port}",
-        f"BIT={bitfile}",
+        "/opt/fpga_app/scripts/program_fpga.tcl",
+        f"SERIAL={serial}",
+        f"BITFILE={bitfile}",
     ]
     subprocess.run(cmd, check=True)

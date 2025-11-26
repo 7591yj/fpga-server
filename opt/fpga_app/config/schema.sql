@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS devices (
   product_name TEXT,
   serial_number TEXT,
   owner_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  current_job_id TEXT REFERENCES jobs(id),
+  current_job_id TEXT REFERENCES jobs(id), -- idle when is NULL
   ts_last_heartbeat DATETIME,
   created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 );

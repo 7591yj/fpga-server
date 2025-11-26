@@ -16,12 +16,30 @@ file_handler.setFormatter(formatter)
 logger.addHandler(file_handler)
 
 DB_PATH = "/opt/fpga_app/config/jobs.db"
-MAX_CONCURRENT_JOBS = 4  # TODO: get limit using djtgcfg
+MAX_CONCURRENT_JOBS = 4  # TODO: get limit using Vivado
 POLL_INTERVAL = 5  # seconds
 
 
 def db():
     return sqlite3.connect(DB_PATH)
+
+
+def acquire_device(conn, job_id):
+    row = conn.execute(
+        "UPDATE devices SET current_job_id=? "
+        "WHERE id=(SELECT id FROM devices WHERE current_job_id IS NULL LIMIT 1) "
+        "RETURNING id, device_id, serial_number",
+        (job_id,),
+    ).fetchone()
+    return row  # None if no device available
+
+
+def release_device(conn, job_id):
+    conn.execute(
+        "UPDATE devices SET current_job_id=NULL, ts_last_heartbeat=CURRENT_TIMESTAMP "
+        "WHERE current_job_id=?",
+        (job_id,),
+    )
 
 
 def run_job(job_id):
