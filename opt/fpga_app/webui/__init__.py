@@ -74,7 +74,7 @@ def index():
 @bp.route("/stat/")
 @ui_login_required
 def stat():
-    device_url = request.host_url.rstrip("/") + f"/api/devices/{serial_number}"
+    device_url = f"http://127.0.0.1:8000/api/devices/{serial_number}"
     device_data = requests.get(device_url).json()
     return render_template(
         "stat.html", device=device_data, serial_number=serial_number, jobs=jobs
