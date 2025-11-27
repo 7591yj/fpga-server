@@ -30,9 +30,11 @@ def upload_bitfile():
         return jsonify({"error": "invalid file type"}), 400
 
     dest = os.path.join(UPLOAD_DIR, secure_filename(file.filename))
-    if os.path.getsize(dest) < 1024:
-        return jsonify({"error": "file too small; invalid bitstream"}), 400
     file.save(dest)
+
+    if os.path.getsize(dest) < 1024:
+        os.remove(dest)
+        return jsonify({"error": "file too small; invalid bitstream"}), 400
 
     return jsonify({"status": "uploaded", "path": dest})
 
