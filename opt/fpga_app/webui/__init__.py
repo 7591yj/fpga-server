@@ -17,7 +17,7 @@ from webui.static.assets import jobs_dummy
 from api.auth import db
 from auth.session_store import get_session, save_session, delete_session
 
-device_id = "device-001"
+serial_number = "Digilent/210292B40661A"
 jobs_raw = json.loads(jobs_dummy.jobs)["jobs"]
 
 jobs = []
@@ -74,10 +74,10 @@ def index():
 @bp.route("/stat/")
 @ui_login_required
 def stat():
-    device_url = request.host_url.rstrip("/") + f"/api/devices/{device_id}"
+    device_url = request.host_url.rstrip("/") + f"/api/devices/{serial_number}"
     device_data = requests.get(device_url).json()
     return render_template(
-        "stat.html", device=device_data, device_id=device_id, jobs=jobs
+        "stat.html", device=device_data, serial_number=serial_number, jobs=jobs
     )
 
 

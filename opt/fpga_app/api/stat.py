@@ -46,15 +46,15 @@ def renew_devices():
     return jsonify({"device_name": device_name, "serial": serial_number})
 
 
-@stat_bp.route("/devices/<device_id>", methods=["GET"])
-def job_status(device_id: str):
+@stat_bp.route("/devices/<path:serial_number>", methods=["GET"])
+def job_status(serial_number: str):
     with db() as conn:
         cur = conn.execute(
             """
             SELECT device_name, device_id, transport_type, product_name, owner_id, serial_number 
-            FROM devices WHERE device_id=?
+            FROM devices WHERE serial_number=?
             """,
-            (device_id,),
+            (serial_number,),
         )
         row = cur.fetchone()
 
