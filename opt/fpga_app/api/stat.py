@@ -1,7 +1,7 @@
 import sqlite3
 from flask import Blueprint, request, jsonify
 
-stat_bp = Blueprint("stats", __name__)
+stat_bp = Blueprint("stat", __name__)
 
 DB_PATH = "/opt/fpga_app/config/jobs.db"
 
@@ -21,23 +21,21 @@ def renew_devices():
     device_id = data.get("device_id", "unknown")
     transport_type = data.get("transport_type", "unknown")
     product_name = data.get("product_name", "unknown")
-    owner_id = data.get("owner_id", "anonymous")
     serial_number = data.get("serial_number", "unknown")
 
     with db() as conn:
         conn.execute(
             """
             INSERT INTO devices 
-                (device_name, device_id, transport_type, product_name, owner_id, serial_number) 
+                (device_name, device_id, transport_type, product_name, serial_number) 
             VALUES
-                (?, ?, ?, ?, ?, ?)
+                (?, ?, ?, ?, ?)
             """,
             (
                 device_name,
                 device_id,
                 transport_type,
                 product_name,
-                owner_id,
                 serial_number,
             ),
         )
@@ -51,8 +49,17 @@ def job_status(serial_number: str):
     with db() as conn:
         cur = conn.execute(
             """
-            SELECT device_name, device_id, transport_type, product_name, owner_id, serial_number 
-            FROM devices WHERE serial_number=?
+            SELECT
+                device_name,
+                device_id,
+                transport_type,
+                product_name,
+                serial_number,
+                current_job_id,
+                ts_last_heartbeat,
+                created_at
+            FROM devices
+            WHERE serial_number = ?
             """,
             (serial_number,),
         )
@@ -67,7 +74,9 @@ def job_status(serial_number: str):
             "device_id": row[1],
             "transport_type": row[2],
             "product_name": row[3],
-            "owner_id": row[4],
-            "serial_number": row[5],
+            "serial_number": row[4],
+            "current_job_id": row[5],
+            "ts_last_heartbeat": row[6],
+            "created_at": row[7],
         }
     )
