@@ -44,8 +44,43 @@ def renew_devices():
     return jsonify({"device_name": device_name, "serial": serial_number})
 
 
+@stat_bp.route("/devices", methods=["GET"])
+def devices_status():
+    with db() as conn:
+        cur = conn.execute(
+            """
+            SELECT
+                d.device_name,
+                d.serial_number,
+                d.current_job_id,
+                COUNT(j.id) AS queued_jobs
+            FROM devices d
+            LEFT JOIN jobs j
+              ON j.device_id = d.device_id
+             AND j.status = 'queued'
+            GROUP BY d.device_name, d.serial_number, d.current_job_id
+            """,
+        )
+        rows = cur.fetchall()
+
+    if not rows:
+        return jsonify([]), 200
+
+    result = [
+        {
+            "device_name": row[0],
+            "serial_number": row[1],
+            "current_job_id": row[2],
+            "queued_jobs": row[3],
+        }
+        for row in rows
+    ]
+
+    return jsonify(result)
+
+
 @stat_bp.route("/devices/<path:serial_number>", methods=["GET"])
-def job_status(serial_number: str):
+def device_status(serial_number: str):
     with db() as conn:
         cur = conn.execute(
             """
