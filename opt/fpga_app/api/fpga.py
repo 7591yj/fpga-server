@@ -5,7 +5,7 @@ from werkzeug.utils import secure_filename
 
 fpga_bp = Blueprint("fpga", __name__)
 
-UPLOAD_DIR = "/opt/fpga_app/config/bitfiles"
+UPLOAD_DIR = os.path.expanduser("~/fpga-server/opt/fpga_app/config/bitfiles")
 
 
 def ensure_dir(path):
