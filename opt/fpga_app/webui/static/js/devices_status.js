@@ -13,6 +13,7 @@ async function fetchDeviceStatuses() {
     // Initialize selected device if not chosen yet
     if (!selectedDeviceId && devices.length > 0) {
       selectedDeviceId = devices[0].serial_number;
+      document.cookie = `active_device=${selectedDeviceId}; path=/`;
     }
 
     const selectedDevice =
@@ -45,6 +46,7 @@ async function fetchDeviceStatuses() {
         selectedDeviceId = d.serial_number;
         // Immediately update displayed active device
         activeDeviceName.textContent = d.device_name;
+        document.cookie = `active_device=${selectedDeviceId}; path=/`;
         fetchDeviceStatuses();
       });
 

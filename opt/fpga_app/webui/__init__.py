@@ -17,7 +17,6 @@ from webui.static.assets import jobs_dummy
 from api.auth import db
 from auth.session_store import get_session, save_session, delete_session
 
-serial_number = "Digilent/210292B40661A"
 jobs_raw = json.loads(jobs_dummy.jobs)["jobs"]
 
 jobs = []
@@ -74,10 +73,47 @@ def index():
 @bp.route("/stat/")
 @ui_login_required
 def stat():
-    device_url = f"http://127.0.0.1:8000/api/devices/{serial_number}"
-    device_data = requests.get(device_url).json()
+    device_sn = request.cookies.get("active_device")
+
+    if device_sn:
+        device_url = f"http://127.0.0.1:8000/api/devices/{device_sn}"
+        device_data = requests.get(device_url).json()
+    else:
+        # Fallback; get all devices and use the first one
+        all_devices_url = "http://127.0.0.1:8000/api/devices"
+        all_devices_resp = requests.get(all_devices_url)
+        if all_devices_resp.ok:
+            all_devices = all_devices_resp.json()
+            if all_devices:
+                device_data = all_devices[0]
+                device_sn = device_data.get("serial_number")
+            else:
+                # No devices present in the API
+                device_data = {
+                    "device_name": "No devices available",
+                    "device_id": None,
+                    "transport_type": None,
+                    "product_name": None,
+                    "serial_number": None,
+                    "current_job_id": None,
+                    "ts_last_heartbeat": None,
+                    "created_at": None,
+                }
+        else:
+            # API failed to respond
+            device_data = {
+                "device_name": "Device API unreachable",
+                "device_id": None,
+                "transport_type": None,
+                "product_name": None,
+                "serial_number": None,
+                "current_job_id": None,
+                "ts_last_heartbeat": None,
+                "created_at": None,
+            }
+
     return render_template(
-        "stat.html", device=device_data, serial_number=serial_number, jobs=jobs
+        "stat.html", device=device_data, serial_number=device_sn, jobs=jobs
     )
 
 
