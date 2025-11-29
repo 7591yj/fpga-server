@@ -1,6 +1,6 @@
 async function fetchDeviceStatuses() {
   try {
-    const response = await fetch("/devices");
+    const response = await fetch("/api/devices");
     if (!response.ok) return;
     const devices = await response.json();
 
