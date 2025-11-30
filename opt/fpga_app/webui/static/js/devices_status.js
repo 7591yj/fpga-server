@@ -2,7 +2,7 @@ let selectedDeviceId = null;
 
 async function fetchDeviceStatuses() {
   try {
-    const response = await fetch("/api/devices");
+    const response = await fetch("/api/devices", { credentials: "same-origin" });
     if (!response.ok) return;
     const devices = await response.json();
 
@@ -10,22 +10,27 @@ async function fetchDeviceStatuses() {
     container.innerHTML = "";
     const activeDeviceName = document.getElementById("active-device-name");
 
-    // Initialize selected device if not chosen yet
-    if (!selectedDeviceId && devices.length > 0) {
-      selectedDeviceId = devices[0].serial_number;
-      document.cookie = `active_device=${selectedDeviceId}; path=/`;
+    const params = new URLSearchParams(window.location.search);
+    selectedDeviceId = params.get("device");
+
+    if (
+      !selectedDeviceId ||
+      !devices.some((d) => d.serial_number === selectedDeviceId)
+    ) {
+      selectedDeviceId = devices[0]?.serial_number || null;
     }
 
-    const selectedDevice =
-      devices.find((d) => d.serial_number === selectedDeviceId) || devices[0];
-
-    activeDeviceName.textContent = selectedDevice.device_name;
+    const selectedDevice = devices.find(
+      (d) => d.serial_number === selectedDeviceId
+    );
+    activeDeviceName.textContent = selectedDevice
+      ? selectedDevice.device_name
+      : "(No active device)";
 
     devices.forEach((d) => {
       const isActive = d.serial_number === selectedDeviceId;
       const queued = d.queued_jobs || 0;
-      const dotColor =
-        queued > 0 ? "has-text-warning" : "has-text-success";
+      const dotColor = queued > 0 ? "has-text-warning" : "has-text-success";
 
       const item = document.createElement("a");
       item.href = "#";
@@ -43,21 +48,23 @@ async function fetchDeviceStatuses() {
       `;
 
       item.addEventListener("click", () => {
-        selectedDeviceId = d.serial_number;
-        // Immediately update displayed active device
-        activeDeviceName.textContent = d.device_name;
-        document.cookie = `active_device=${selectedDeviceId}; path=/`;
-        fetchDeviceStatuses();
+        setActiveDevice(d.serial_number);
       });
 
       container.appendChild(item);
     });
   } catch (err) {
-    console.error("Failed to fetch device statuses", err);
+    console.error("Failed to fetch device statuses:", err);
   }
+}
+
+function setActiveDevice(serial) {
+  const current = new URL(window.location.href);
+  current.searchParams.set("device", serial);
+  // preserve pathname
+  window.location.href = `${current.pathname}?${current.searchParams.toString()}`;
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   fetchDeviceStatuses();
-  setInterval(fetchDeviceStatuses, 60000);
 });

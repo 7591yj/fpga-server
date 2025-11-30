@@ -12,6 +12,7 @@ from flask import (
     make_response,
     redirect,
     url_for,
+    jsonify,
 )
 from webui.static.assets import jobs_dummy
 from api.auth import db
@@ -73,48 +74,62 @@ def index():
 @bp.route("/stat/")
 @ui_login_required
 def stat():
-    device_sn = request.cookies.get("active_device")
+    device_sn = request.args.get("device")
 
+    device_data = None
     if device_sn:
-        device_url = f"http://127.0.0.1:8000/api/devices/{device_sn}"
-        device_data = requests.get(device_url).json()
-    else:
-        # Fallback; get all devices and use the first one
-        all_devices_url = "http://127.0.0.1:8000/api/devices"
-        all_devices_resp = requests.get(all_devices_url)
+        r = requests.get(f"http://127.0.0.1:8000/api/devices/{device_sn}")
+        if r.ok:
+            device_data = r.json()
+
+    if not device_data:
+        all_devices_resp = requests.get("http://127.0.0.1:8000/api/devices")
         if all_devices_resp.ok:
-            all_devices = all_devices_resp.json()
-            if all_devices:
-                device_data = all_devices[0]
+            devices = all_devices_resp.json()
+            device_data = devices[0] if devices else None
+            if device_data:
                 device_sn = device_data.get("serial_number")
-            else:
-                # No devices present in the API
-                device_data = {
-                    "device_name": "No devices available",
-                    "device_id": None,
-                    "transport_type": None,
-                    "product_name": None,
-                    "serial_number": None,
-                    "current_job_id": None,
-                    "ts_last_heartbeat": None,
-                    "created_at": None,
-                }
-        else:
-            # API failed to respond
-            device_data = {
-                "device_name": "Device API unreachable",
-                "device_id": None,
-                "transport_type": None,
-                "product_name": None,
-                "serial_number": None,
-                "current_job_id": None,
-                "ts_last_heartbeat": None,
-                "created_at": None,
-            }
+
+    if not device_data:
+        device_data = {
+            "device_name": "No devices available",
+            "device_id": None,
+            "transport_type": None,
+            "product_name": None,
+            "serial_number": None,
+            "current_job_id": None,
+            "ts_last_heartbeat": None,
+            "created_at": None,
+        }
 
     return render_template(
         "stat.html", device=device_data, serial_number=device_sn, jobs=jobs
     )
+
+
+@bp.route("/stat/data")
+@ui_login_required
+def stat_data():
+    device_sn = request.args.get("device")
+    device_data = None
+
+    if device_sn:
+        r = requests.get(f"http://127.0.0.1:8000/api/devices/{device_sn}")
+        if r.ok:
+            device_data = r.json()
+
+    if not device_data:
+        r = requests.get("http://127.0.0.1:8000/api/devices")
+        if not r.ok:
+            return jsonify({"error": "Device API unreachable"}), 503
+        devices = r.json()
+        if devices:
+            device_data = devices[0]
+            device_sn = device_data.get("serial_number")
+        else:
+            return jsonify({"error": "No devices available"}), 404
+
+    return jsonify({"device": device_data, "jobs": jobs})
 
 
 @bp.route("/queue/")
@@ -155,10 +170,27 @@ def login():
             return render_template("login.html", error="Invalid username or password")
 
         token = secrets.token_hex(32)
-        id = row[1]
-        save_session(token, username, id)
+        user_id = row[1]
+        save_session(token, username, user_id)
 
-        resp = make_response(redirect(url_for("webui.index")))
+        # obtain first available device
+        default_sn = None
+        try:
+            r = requests.get("http://127.0.0.1:8000/api/devices", timeout=2)
+            if r.ok:
+                devices = r.json()
+                if devices:
+                    default_sn = devices[0].get("serial_number")
+        except Exception:
+            default_sn = None
+
+        # build redirect URL
+        if default_sn:
+            redirect_url = url_for("webui.stat", device=default_sn)
+        else:
+            redirect_url = url_for("webui.stat")
+
+        resp = make_response(redirect(redirect_url))
         resp.set_cookie("auth_token", token, httponly=True, secure=False, path="/")
         return resp
 

@@ -1,4 +1,19 @@
 document.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const activeDevice = params.get("device");
+  if (!activeDevice) return;
+
+  // Inject ?device=<serial> into local hyperlinks
+  document.querySelectorAll("a[href^='/']").forEach((link) => {
+    const url = new URL(link.href, window.location.origin);
+
+    // preserve original query params, then add device
+    url.searchParams.set("device", activeDevice);
+    link.href = url.pathname + "?" + url.searchParams.toString();
+  });
+});
+
+document.addEventListener("DOMContentLoaded", () => {
   const dropdown = document.querySelector("#dropdown");
   const trigger = dropdown.querySelector("#dropdown-trigger");
   const logoutA = document.querySelector("#logout-a");

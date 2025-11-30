@@ -14,71 +14,75 @@
           <p class="level-item">{{ online_stat_tag("online") }}</p>
         </div>
       </div>
-      <table class="table" style="width: 100%;">
-        <tbody>
-          <tr>
-            <th>Device:</th>
-            <td>{{ device.device_name }} ({{ device.device_id }})</td>
-          </tr>
-          <tr>
-            <th>Device ID:</th>
-            <td>{{ device.device_id }}</td>
-          </tr>
-          <tr>
-            <th>Transport Type:</th>
-            <td>{{ device.transport_type }}</td>
-          </tr>
-          <tr>
-            <th>Product Name:</th>
-            <td>{{ device.product_name }}</td>
-          </tr>
-          <tr>
-            <th>User Name:</th>
-            <td>{{ device.device_name }}</td>
-          </tr>
-          <tr>
-            <th>Serial Number:</th>
-            <td>{{ device.serial_number }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <div id="stats-container">
+        <table class="table" style="width: 100%;">
+          <tbody>
+            <tr>
+              <th>Device:</th>
+              <td>{{ device.device_name }} ({{ device.device_id }})</td>
+            </tr>
+            <tr>
+              <th>Device ID:</th>
+              <td>{{ device.device_id }}</td>
+            </tr>
+            <tr>
+              <th>Transport Type:</th>
+              <td>{{ device.transport_type }}</td>
+            </tr>
+            <tr>
+              <th>Product Name:</th>
+              <td>{{ device.product_name }}</td>
+            </tr>
+            <tr>
+              <th>User Name:</th>
+              <td>{{ device.device_name }}</td>
+            </tr>
+            <tr>
+              <th>Serial Number:</th>
+              <td>{{ device.serial_number }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
     <div class="column">
       <h2 class="subtitle">Queue List</h2>
-      <table class="table" style="width:100%">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>
-              <abbr title="Bitfile name">Name</abbr>
-            </th>
-            <th>
-              <abbr title="Status">Stat</abbr>
-            </th>
-            <th>
-              <abbr title="Queued by">Usr</abbr>
-            </th>
-            <th>
-              <abbr title="Staying in the queue for">Time</abbr>
-            </th>
-            <th>Job Id</th>
-          </tr>
-        </thead>
-        <tbody>
-          {% for job in jobs %}
-            {% if job.status == "queued" %}
-              <tr>
-                <th>{{ loop.index }}</th>
-                <td>{{ job.name }}</td>
-                <td>{{ job_stat_tag(job.status) }}</td>
-                <td>{{ job.user }}</td>
-                <td>{{ job.time }}</td>
-                <td>{{ job.id }}</td>
-              </tr>
-            {% endif %}
-          {% endfor %}
-        </tbody>
-      </table>
+      <div id="queue-container">
+        <table class="table" style="width:100%">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>
+                <abbr title="Bitfile name">Name</abbr>
+              </th>
+              <th>
+                <abbr title="Status">Stat</abbr>
+              </th>
+              <th>
+                <abbr title="Queued by">Usr</abbr>
+              </th>
+              <th>
+                <abbr title="Staying in the queue for">Time</abbr>
+              </th>
+              <th>Job Id</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for job in jobs %}
+              {% if job.status == "queued" %}
+                <tr>
+                  <th>{{ loop.index }}</th>
+                  <td>{{ job.name }}</td>
+                  <td>{{ job_stat_tag(job.status) }}</td>
+                  <td>{{ job.user }}</td>
+                  <td>{{ job.time }}</td>
+                  <td>{{ job.id }}</td>
+                </tr>
+              {% endif %}
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
     </div>
   </div>
 {% endblock %}
