@@ -103,3 +103,61 @@ def job_status(job_id: str):
             "serial_number": row["serial_number"],
         }
     )
+
+
+@jobs_bp.route("/<path:device_sn>", methods=["GET"])
+def jobs_status(device_sn):
+    with db() as conn:
+        conn.row_factory = sqlite3.Row  # enable name-based column access
+        cur = conn.execute(
+            """
+            SELECT 
+                j.id,
+                j.status,
+                j.result,
+                j.ts_updated,
+                j.ts_created,
+                j.ts_started,
+                j.ts_finished,
+                j.ts_cancelled,
+                j.user_id,
+                j.device_sn,
+                u.username,
+                d.device_name,
+                d.device_id
+            FROM jobs j
+            LEFT JOIN users u ON j.user_id = u.id
+            LEFT JOIN devices d ON j.device_sn = d.serial_number
+            WHERE j.device_sn = ?
+            ORDER BY j.ts_created DESC
+            """,
+            (device_sn,),
+        )
+        rows = cur.fetchall()
+
+    if not rows:
+        return jsonify({"device_sn": device_sn, "jobs": []}), 200
+
+    return jsonify(
+        {
+            "device_sn": device_sn,
+            "jobs": [
+                {
+                    "job_id": r["id"],
+                    "status": r["status"],
+                    "result": r["result"],
+                    "ts_updated": r["ts_updated"],
+                    "ts_created": r["ts_created"],
+                    "ts_started": r["ts_started"],
+                    "ts_finished": r["ts_finished"],
+                    "ts_cancelled": r["ts_cancelled"],
+                    "user_id": r["user_id"],
+                    "username": r["username"],
+                    "device_id": r["device_id"],
+                    "device_name": r["device_name"],
+                    "serial_number": r["device_sn"],
+                }
+                for r in rows
+            ],
+        }
+    )

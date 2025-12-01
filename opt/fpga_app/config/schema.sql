@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE jobs (
   id TEXT PRIMARY KEY,
   user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-  device_id TEXT REFERENCES devices(device_id) ON DELETE SET NULL,
+  device_sn TEXT REFERENCES devices(serial_number) ON DELETE SET NULL,
   spec TEXT,
   status TEXT CHECK (
     status IN ('queued', 'running', 'finished', 'cancelled', 'error')

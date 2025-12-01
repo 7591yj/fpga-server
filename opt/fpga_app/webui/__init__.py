@@ -14,9 +14,9 @@ from flask import (
     url_for,
     jsonify,
 )
-from webui.static.assets import jobs_dummy
 from api.auth import db
 from auth.session_store import get_session, save_session, delete_session
+from webui.static.assets import jobs_dummy
 
 jobs_raw = json.loads(jobs_dummy.jobs)["jobs"]
 
@@ -141,7 +141,30 @@ def queue():
 @bp.route("/job/")
 @ui_login_required
 def job():
-    return render_template("job.html", jobs=jobs)
+    device_sn = request.args.get("device")
+    jobs_data = []
+
+    if device_sn:
+        r = requests.get(f"http://127.0.0.1:8000/api/jobs/{device_sn}")
+        if not r.ok:
+            return jsonify({"error": "Device job API unreachable"}), 503
+
+        jobs_data_raw = r.json()
+        # Expect dict: {"device_sn": ..., "jobs": [...], "message": ...}
+        jobs_data = jobs_data_raw.get("jobs", [])
+    else:
+        r = requests.get("http://127.0.0.1:8000/api/jobs")
+        if not r.ok:
+            return jsonify({"error": "Job API unreachable"}), 503
+
+        # Expect list of all jobs
+        jobs_data_raw = r.json()
+        if isinstance(jobs_data_raw, list):
+            jobs_data = sorted(
+                jobs_data_raw, key=lambda x: x["ts_created"], reverse=True
+            )
+
+    return render_template("job.html", jobs=jobs_data)
 
 
 @bp.route("/job/<job_id>")

@@ -8,16 +8,13 @@
       <thead>
         <tr>
           <th>
-            <abbr title="Bitfile name">Name</abbr>
-          </th>
-          <th>
             <abbr title="Status">Stat</abbr>
           </th>
           <th>
             <abbr title="Queued by">Usr</abbr>
           </th>
           <th>
-            <abbr title="Staying in the queue for">Time</abbr>
+            <abbr title="Queued the job at">Time</abbr>
           </th>
           <th>Job Id</th>
           <th>Cancel</th>
@@ -27,11 +24,10 @@
       <tbody>
         {% for job in jobs %}
           <tr>
-            <td>{{ job.name }}</td>
             <td>{{ job_stat_tag(job.status) }}</td>
-            <td>{{ job.user }}</td>
-            <td>{{ job.time }}</td>
-            <td>{{ job.id }}</td>
+            <td>{{ job.username }}</td>
+            <td>{{ job.ts_started }}</td>
+            <td>{{ job.job_id }}</td>
             <td>
               <a class="has-text-danger job-cancel-a" href="#">Cancel</a>
               <div class="modal job-cancel-modal">
@@ -47,7 +43,7 @@
               </div>
             </td>
             <td>
-              <a href="{{ url_for('webui.job_detail', job_id=job.id) }}">Show</a>
+              <a href="{{ url_for('webui.job_detail', job_id=job.job_id) }}">Show</a>
             </td>
           </tr>
         {% endfor %}

@@ -56,7 +56,7 @@ def devices_status():
                 COUNT(j.id) AS queued_jobs
             FROM devices d
             LEFT JOIN jobs j
-              ON j.device_id = d.device_id
+              ON j.device_sn = d.serial_number
              AND j.status = 'queued'
             GROUP BY d.device_name, d.serial_number, d.current_job_id
             """,
