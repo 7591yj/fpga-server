@@ -1,13 +1,11 @@
 from functools import wraps
 import secrets
 import bcrypt
-import json
 import requests
 
 from flask import (
     Blueprint,
     render_template,
-    abort,
     request,
     make_response,
     redirect,
@@ -16,22 +14,6 @@ from flask import (
 )
 from api.auth import db
 from auth.session_store import get_session, save_session, delete_session
-from webui.static.assets import jobs_dummy
-
-jobs_raw = json.loads(jobs_dummy.jobs)["jobs"]
-
-jobs = []
-for j in jobs_raw:
-    spec = json.loads(j["spec"]) if j["spec"] else {}
-    jobs.append(
-        {
-            "id": j["id"],
-            "name": spec.get("name"),
-            "status": j["status"],
-            "user": j["user_id"],
-            "time": j["ts_created"],
-        }
-    )
 
 
 def ui_login_required(f):
@@ -75,7 +57,6 @@ def index():
 @ui_login_required
 def stat():
     device_sn = request.args.get("device")
-
     device_data = None
     if device_sn:
         r = requests.get(f"http://127.0.0.1:8000/api/devices/{device_sn}")
@@ -101,9 +82,21 @@ def stat():
             "ts_last_heartbeat": None,
             "created_at": None,
         }
+        return render_template(
+            "stat.html", device=device_data, serial_number=None, jobs=[]
+        )
+
+    # request queued jobs for that device
+    jobs_data = []
+    jobs_resp = requests.get(f"http://127.0.0.1:8000/api/jobs/{device_sn}")
+    if jobs_resp.ok:
+        jobs_raw = jobs_resp.json()
+        # Expect structure: {"device_sn": ..., "jobs": [...]}
+        all_jobs = jobs_raw.get("jobs", [])
+        jobs_data = [j for j in all_jobs if j.get("status") == "queued"]
 
     return render_template(
-        "stat.html", device=device_data, serial_number=device_sn, jobs=jobs
+        "stat.html", device=device_data, serial_number=device_sn, jobs=jobs_data
     )
 
 
@@ -118,18 +111,27 @@ def stat_data():
         if r.ok:
             device_data = r.json()
 
+    # fallback to first available device
     if not device_data:
         r = requests.get("http://127.0.0.1:8000/api/devices")
         if not r.ok:
             return jsonify({"error": "Device API unreachable"}), 503
         devices = r.json()
-        if devices:
-            device_data = devices[0]
-            device_sn = device_data.get("serial_number")
-        else:
+        if not devices:
             return jsonify({"error": "No devices available"}), 404
+        device_data = devices[0]
+        device_sn = device_data.get("serial_number")
 
-    return jsonify({"device": device_data, "jobs": jobs})
+    # fetch jobs for the selected device
+    jobs_data = []
+    jobs_resp = requests.get(f"http://127.0.0.1:8000/api/jobs/{device_sn}")
+    if jobs_resp.ok:
+        jobs_raw = jobs_resp.json()
+        # Expect structure: {"device_sn": ..., "jobs": [...]}
+        all_jobs = jobs_raw.get("jobs", [])
+        jobs_data = [j for j in all_jobs if isinstance(j, dict)]
+
+    return jsonify({"device": device_data, "jobs": jobs_data})
 
 
 @bp.route("/queue/")
@@ -175,7 +177,7 @@ def job_detail(job_id):
         return jsonify({"error": "Job API unreachable"}), 503
 
     job_data_raw = r.json()
-    # Expect dict: {"job_id": ..., "status": ..., ...}
+    # Expect dict: {"job_id: ..., "status": ..., ...}
     job_data = job_data_raw if isinstance(job_data_raw, dict) else None
 
     if not job_data:

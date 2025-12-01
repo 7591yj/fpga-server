@@ -52,9 +52,7 @@
           <thead>
             <tr>
               <th>#</th>
-              <th>
-                <abbr title="Bitfile name">Name</abbr>
-              </th>
+              <th>Job Id</th>
               <th>
                 <abbr title="Status">Stat</abbr>
               </th>
@@ -64,7 +62,6 @@
               <th>
                 <abbr title="Staying in the queue for">Time</abbr>
               </th>
-              <th>Job Id</th>
             </tr>
           </thead>
           <tbody>
@@ -72,11 +69,10 @@
               {% if job.status == "queued" %}
                 <tr>
                   <th>{{ loop.index }}</th>
-                  <td>{{ job.name }}</td>
+                  <td>{{ job.job_id }}</td>
                   <td>{{ job_stat_tag(job.status) }}</td>
-                  <td>{{ job.user }}</td>
-                  <td>{{ job.time }}</td>
-                  <td>{{ job.id }}</td>
+                  <td>{{ job.username }}</td>
+                  <td>{{ job.ts_created }}</td>
                 </tr>
               {% endif %}
             {% endfor %}
