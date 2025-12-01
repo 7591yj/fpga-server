@@ -7,11 +7,11 @@
     <tbody>
       <tr>
         <th>Job ID:</th>
-        <td>{{ job.id }}</td>
+        <td>{{ job.job_id }}</td>
       </tr>
       <tr>
-        <th>Name:</th>
-        <td>{{ job.name }}</td>
+        <th>Target Device:</th>
+        <td>{{ job.device_name }}({{ job.serial_number }})</td>
       </tr>
       <tr>
         <th>Status</th>
@@ -19,11 +19,11 @@
       </tr>
       <tr>
         <th>User Name:</th>
-        <td>{{ job.user }}</td>
+        <td>{{ job.username }}</td>
       </tr>
       <tr>
         <th>Time</th>
-        <td>{{ job.time }}</td>
+        <td>{{ job.ts_started }}</td>
       </tr>
     </tbody>
   </table>

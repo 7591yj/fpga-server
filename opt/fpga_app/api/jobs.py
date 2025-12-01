@@ -58,6 +58,7 @@ def submit_job():
 @jobs_bp.route("/status/<job_id>", methods=["GET"])
 def job_status(job_id: str):
     with db() as conn:
+        conn.row_factory = sqlite3.Row  # enable name-based column access
         cur = conn.execute(
             """
             SELECT 
@@ -70,13 +71,13 @@ def job_status(job_id: str):
                 j.ts_finished,
                 j.ts_cancelled,
                 j.user_id,
-                j.device_id,
+                j.device_sn,
                 u.username,
                 d.device_name,
-                d.serial_number
+                d.device_id
             FROM jobs j
             LEFT JOIN users u ON j.user_id = u.id
-            LEFT JOIN devices d ON j.device_id = d.device_id
+            LEFT JOIN devices d ON j.device_sn = d.serial_number
             WHERE j.id = ?
             """,
             (job_id,),
@@ -100,7 +101,7 @@ def job_status(job_id: str):
             "username": row["username"],
             "device_id": row["device_id"],
             "device_name": row["device_name"],
-            "serial_number": row["serial_number"],
+            "serial_number": row["device_sn"],
         }
     )
 

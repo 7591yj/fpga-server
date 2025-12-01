@@ -170,10 +170,16 @@ def job():
 @bp.route("/job/<job_id>")
 @ui_login_required
 def job_detail(job_id):
-    job_data = next((job for job in jobs if job["id"] == job_id), None)
+    r = requests.get(f"http://127.0.0.1:8000/api/jobs/status/{job_id}")
+    if not r.ok:
+        return jsonify({"error": "Job API unreachable"}), 503
 
-    if job_data is None:
-        abort(404)
+    job_data_raw = r.json()
+    # Expect dict: {"job_id": ..., "status": ..., ...}
+    job_data = job_data_raw if isinstance(job_data_raw, dict) else None
+
+    if not job_data:
+        return jsonify({"error": f"Job {job_id} not found"}), 404
 
     return render_template("job_detail.html", job=job_data)
 
