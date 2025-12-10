@@ -44,11 +44,14 @@ document.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+      const params = new URLSearchParams(window.location.search);
+      const deviceSn = params.get("device");
+
       // Automatically program after uploading
       const programResp = await fetch("/api/fpga/program", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: resp.path }),
+        body: JSON.stringify({ path: resp.path, device_sn: deviceSn }),
       });
       const programResult = await programResp.json();
 

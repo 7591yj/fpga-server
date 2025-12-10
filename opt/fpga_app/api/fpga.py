@@ -43,6 +43,7 @@ def upload_bitfile():
 def program_fpga():
     data = request.get_json(force=True)
     bit_path = data.get("path")
+    device_sn = data.get("device_sn")
 
     if not bit_path or not os.path.isfile(bit_path):
         return jsonify({"error": "bitfile not found"}), 400
@@ -54,10 +55,7 @@ def program_fpga():
 
     try:
         result = subprocess.run(
-            [
-                "/opt/fpga_app/scripts/program_fpga.sh",
-                abs_path,
-            ],
+            ["/opt/fpga_app/scripts/program_fpga.sh", abs_path, device_sn],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,
