@@ -6,11 +6,11 @@ Mini server for controlling FPGA boards through USB.
 
 > Please note that this server configuration was NOT designed to be a public web
 > service.
-> Users are expected to use VPN services - Tailwind in this case - to connect to
+> Users are expected to use VPN services - Tailscale in this case - to connect to
 > the server.
 > Risks that may follow by using this server public is not considered.
 
-The `fpga-server` is a mini server configuration designed to control FPGA boards
+`fpga-server` is a mini server configuration designed to control FPGA boards
 via USB.
 It provides a web interface and an API to manage FPGA programming, job queues,
 and user authentication.
