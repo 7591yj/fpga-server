@@ -16,4 +16,6 @@ foreach t $targets {
     }
     close_hw_target $t
 }
+close_hw_target
+disconnect_hw_server
 exit
