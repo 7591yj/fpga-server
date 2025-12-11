@@ -6,7 +6,7 @@ import logging
 logger = logging.getLogger("fpga-server_logger")
 logger.setLevel(logging.DEBUG)
 
-log_file_path = "/var/log/fpga_app/api.out.log"
+log_file_path = "/var/log/fpga_app/worker.app.log"
 file_handler = logging.FileHandler(log_file_path)
 file_handler.setLevel(logging.INFO)
 
