@@ -71,8 +71,8 @@ def program_fpga():
         cursor = conn.cursor()
         cursor.execute(
             """
-            INSERT INTO jobs (id, user_id, spec, device_sn, status, ts_created)
-            VALUES (?, ?, ?, ?, 'queued', CURRENT_TIMESTAMP)
+            INSERT INTO jobs (id, user_id, spec, device_sn, status)
+            VALUES (?, ?, ?, ?, 'queued')
             """,
             (job_id, user_id, abs_path, device_sn),
         )
