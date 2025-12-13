@@ -1,131 +1,166 @@
-import sqlite3
 import time
-import multiprocessing
 import logging
-
-logger = logging.getLogger("fpga-server_logger")
-logger.setLevel(logging.DEBUG)
-
-log_file_path = "/var/log/fpga_app/worker.app.log"
-file_handler = logging.FileHandler(log_file_path)
-file_handler.setLevel(logging.INFO)
-
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-file_handler.setFormatter(formatter)
-
-logger.addHandler(file_handler)
+import sqlite3
+import multiprocessing
+import subprocess
 
 DB_PATH = "/opt/fpga_app/config/jobs.db"
+POLL_INTERVAL = 5
 MAX_CONCURRENT_JOBS = 4  # TODO: get limit using Vivado
-POLL_INTERVAL = 5  # seconds
+
+logger = logging.getLogger("fpga-worker")
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler("/var/log/fpga_app/worker.app.log")
+handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))
+logger.addHandler(handler)
 
 
 def db():
-    return sqlite3.connect(DB_PATH)
+    return sqlite3.connect(DB_PATH, timeout=10, isolation_level=None)
 
 
-def acquire_device(conn, job_id):
-    row = conn.execute(
-        "UPDATE devices SET current_job_id=? "
-        "WHERE id=(SELECT id FROM devices WHERE current_job_id IS NULL LIMIT 1) "
-        "RETURNING id, device_id, serial_number",
-        (job_id,),
-    ).fetchone()
-    return row  # None if no device available
+def program_fpga(serial, bitfile):
+    cmd = [
+        "vivado_lab",
+        "-mode",
+        "batch",
+        "-source",
+        "/opt/fpga_app/scripts/program_fpga.tcl",
+        f'-tclargs "{bitfile}" "{serial}"',
+    ]
+    return subprocess.run(cmd, check=True, capture_output=True, text=True)
 
 
-def release_device(conn, job_id):
+def lock_device(conn, serial, job_id):
+    conn.execute("BEGIN IMMEDIATE")
     conn.execute(
-        "UPDATE devices SET current_job_id=NULL, ts_last_heartbeat=CURRENT_TIMESTAMP "
-        "WHERE current_job_id=?",
-        (job_id,),
+        """
+        UPDATE devices
+        SET current_job_id = ?
+        WHERE serial_number = ? AND current_job_id IS NULL
+        """,
+        (job_id, serial),
     )
+    success = conn.total_changes == 1
+    if success:
+        conn.commit()
+    else:
+        conn.rollback()
+    return success
+
+
+def release_device(conn, serial):
+    conn.execute(
+        "UPDATE devices SET current_job_id=NULL, ts_last_heartbeat=CURRENT_TIMESTAMP WHERE serial_number=?",
+        (serial,),
+    )
+    conn.commit()
 
 
 def run_job(job_id):
-    """
-    This function is run in a separate process
-    """
-    logging.info(f"Starting job: {job_id}")
     conn = db()
+    device_sn = None
     try:
+        job = conn.execute(
+            "SELECT device_sn, spec FROM jobs WHERE id=?",
+            (job_id,),
+        ).fetchone()
+        if not job:
+            raise RuntimeError(f"Job {job_id} not found.")
+        device_sn, bitfile = job
+
+        if not lock_device(conn, device_sn, job_id):
+            raise RuntimeError(f"Device {device_sn} is in use.")
+
         conn.execute(
-            "UPDATE jobs SET status='running', ts_updated=CURRENT_TIMESTAMP WHERE id=?",
+            """
+            UPDATE jobs
+            SET status='running',
+                ts_started=CURRENT_TIMESTAMP,
+                ts_updated=CURRENT_TIMESTAMP
+            WHERE id=?
+            """,
             (job_id,),
         )
         conn.commit()
 
-        # TODO: remove mock job
-
-        # --- Start of Mock Job ---
-        logging.info(f"Processing job: {job_id}")
-        time.sleep(10)  # Simulate a 10-second job
-        result = "done"
-        # --- End of Mock Job ---
+        result = program_fpga(device_sn, bitfile)
 
         conn.execute(
-            "UPDATE jobs SET status='completed', result=?, ts_updated=CURRENT_TIMESTAMP WHERE id=?",
-            (result, job_id),
+            """
+            UPDATE jobs
+            SET status='finished',
+                result=?,
+                ts_finished=CURRENT_TIMESTAMP,
+                ts_updated=CURRENT_TIMESTAMP
+            WHERE id=?
+            """,
+            (result.stdout.strip(), job_id),
         )
         conn.commit()
-        logging.info(f"Finished job: {job_id}")
+        logger.info(f"Job {job_id} finished for device {device_sn}")
 
     except Exception as e:
-        logging.error(f"Error processing job {job_id}: {e}")
-        # Update job status to 'failed'
+        logger.error(f"Job {job_id} failed: {e}")
         conn.execute(
-            "UPDATE jobs SET status='failed', result=?, ts_updated=CURRENT_TIMESTAMP WHERE id=?",
+            """
+            UPDATE jobs
+            SET status='error',
+                result=?,
+                ts_updated=CURRENT_TIMESTAMP
+            WHERE id=?
+            """,
             (str(e), job_id),
         )
         conn.commit()
+
     finally:
+        if device_sn:  # release only if known
+            try:
+                release_device(conn, device_sn)
+            except Exception:
+                pass
         conn.close()
 
 
+def next_queued_job(conn):
+    row = conn.execute(
+        """
+        SELECT id
+        FROM jobs AS j
+        WHERE j.status = 'queued'
+          AND NOT EXISTS (
+            SELECT 1 FROM jobs j2
+            WHERE j2.device_sn = j.device_sn AND j2.status = 'running'
+          )
+        ORDER BY j.ts_created ASC
+        LIMIT 1
+        """
+    ).fetchone()
+    return row[0] if row else None
+
+
 def main():
-    """
-    Polls the database for pending jobs and dispatches them to worker processes
-    """
-    logging.info("Starting worker process...")
-    active_processes = []
-
+    logger.info("Worker started")
+    procs = []
     while True:
-        conn = db()
-        try:
-            # Clean up finished processes from the active list
-            active_processes = [p for p in active_processes if p.is_alive()]
-
-            # Get the number of currently running jobs
-            running_jobs_count = len(active_processes)
-            logging.info(f"{running_jobs_count} jobs currently running.")
-
-            if running_jobs_count < MAX_CONCURRENT_JOBS:
-                # Fetch the oldest pending job (FIFO)
-                cursor = conn.cursor()
-                cursor.execute(
-                    "SELECT id FROM jobs WHERE status='pending' ORDER BY ts_created ASC LIMIT 1"
-                )
-                job = cursor.fetchone()
-
-                if job:
-                    job_id = job[0]
-                    logging.info(f"Found pending job: {job_id}. Dispatching...")
-
-                    # Spawn a new process to run the job
-                    process = multiprocessing.Process(target=run_job, args=(job_id,))
-                    process.start()
-                    active_processes.append(process)
-
-            else:
-                logging.info("Max concurrent jobs reached. Waiting...")
-
-        except Exception as e:
-            logging.error(f"An error occurred in the main worker loop: {e}")
-        finally:
-            conn.close()
-
+        procs = [p for p in procs if p.is_alive()]
+        if len(procs) < MAX_CONCURRENT_JOBS:
+            conn = db()
+            try:
+                job_id = next_queued_job(conn)
+                if job_id:
+                    logger.info(f"Dispatching job {job_id}")
+                    p = multiprocessing.Process(target=run_job, args=(job_id,))
+                    p.start()
+                    procs.append(p)
+            except Exception as e:
+                logger.error(f"Dispatcher failure: {e}")
+            finally:
+                conn.close()
         time.sleep(POLL_INTERVAL)
 
 
 if __name__ == "__main__":
     main()
+

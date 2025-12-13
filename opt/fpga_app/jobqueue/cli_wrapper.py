@@ -8,10 +8,9 @@ def program_fpga(serial, bitfile):
         "batch",
         "-source",
         "/opt/fpga_app/scripts/program_fpga.tcl",
-        f"SERIAL={serial}",
-        f"BITFILE={bitfile}",
+        f'-tclargs "{bitfile}" "{serial}"',
     ]
-    subprocess.run(cmd, check=True)
+    return subprocess.run(cmd, check=True, capture_output=True, text=True)
 
 
 def find_devices():
