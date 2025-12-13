@@ -1,12 +1,10 @@
 # fpga-server
 
-Mini server for controlling FPGA boards through USB.
+Simple web UI setup for controlling FPGA boards over the network through USB.
 
 ## Introduction
 
-> Please note that this server configuration was NOT designed to be a public web
-> service.
-> It is highly recommended to use some kind of safety measures to protect the
+> It is a MUST to use some kind of safety measures to protect the
 > server from unauthorized access.
 > Risks that may follow by using this server public are not considered.
 
@@ -47,8 +45,8 @@ To set up `fpga-server`, follow these steps:
 
    If you need to run part of the scripts manually, use other scripts provided.
 
-   > Please understand that we internally moved to use Cloudflare Zero Trust;
-   > Tailscale may not work as expected.
+> Please understand that we internally moved to use Cloudflare Zero Trust;
+> Tailscale may not work as expected.
 
 ```bash
 # Install system dependencies
@@ -57,10 +55,6 @@ To set up `fpga-server`, follow these steps:
 ./install-vivado-deps.sh
 # Install Python dependencies
 ./install-pip-deps.sh
-# This is typically handled by install-pip-deps.sh, but if you would like:
-python3 -m venv opt/fpga_app/venv
-source opt/fpga_app/venv/bin/activate
-pip install -r opt/fpga_app/requirements.txt
 # Initialize the database
 ./opt/fpga_app/scripts/init_db.sh
 # Create symlinks

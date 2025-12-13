@@ -59,19 +59,4 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
   echo "supervisord setup complete."
 fi
 
-# ask about Tailscale
-read -p "Do you want to set up and start Tailscale? (y/n) " -n 1 -r
-echo
-if [[ $REPLY =~ ^[Yy]$ ]]; then
-  echo "Please enter your Tailscale AUTH_KEY:"
-  read -r AUTH_KEY
-  export AUTH_KEY
-  echo "Running Tailscale setup..."
-  if sudo ./setup-tailscale.sh; then
-    echo "Tailscale setup script completed."
-  else
-    echo "Tailscale setup script failed."
-  fi
-fi
-
 echo "Initialization complete."
