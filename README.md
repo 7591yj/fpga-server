@@ -6,9 +6,9 @@ Mini server for controlling FPGA boards through USB.
 
 > Please note that this server configuration was NOT designed to be a public web
 > service.
-> Users are expected to use VPN services - Tailscale in this case - to connect to
-> the server.
-> Risks that may follow by using this server public is not considered.
+> It is highly recommended to use some kind of safety measures to protect the
+> server from unauthorized access.
+> Risks that may follow by using this server public are not considered.
 
 `fpga-server` is a mini server configuration designed to control FPGA boards
 via USB.
@@ -43,12 +43,12 @@ To set up `fpga-server`, follow these steps:
 
    Running the script will install system dependencies, install python dependencies,
    set up virtual environment, initialize the database, create symlinks,
-   and configure Supervisor(optional) and set up Tailscale(optional).
+   and configure Supervisor(optional).
+
+   If you need to run part of the scripts manually, use other scripts provided.
 
    > Please understand that we internally moved to use Cloudflare Zero Trust;
    > Tailscale may not work as expected.
-
-   If you need to run part of the scripts manually, use other scripts provided.
 
 ```bash
 # Install system dependencies

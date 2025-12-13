@@ -50,35 +50,15 @@ document.addEventListener("DOMContentLoaded", () => {
       // Automatically program after uploading
       const programResp = await fetch("/api/fpga/program", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ path: resp.path, device_sn: deviceSn }),
+        headers: {
+          "Content-Type": "application/json",
+        }, body: JSON.stringify({ path: resp.path, device_sn: deviceSn }),
       });
       const programResult = await programResp.json();
 
-      if (programResult.status !== "success") {
+      if (programResult.status !== "queued") {
         console.error("Programming failed:", programResult.error);
         return;
-      }
-
-      // Automatically submit a job after programming
-      const submitResp = await fetch("/api/jobs/submit", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          user_id: CURRENT_USER_ID, // TODO: replace with real user id
-          device_id: CURRENT_DEVICE_ID, // TODO: replace with device id
-          job: {
-            bitfile: resp.path,
-            log: programResult.output,
-          },
-        }),
-      });
-
-      const submitResult = await submitResp.json();
-      if (submitResp.ok) {
-        console.log("Job submitted:", submitResult.job_id);
-      } else {
-        console.error("Job submission failed:", submitResult.error);
       }
     };
 

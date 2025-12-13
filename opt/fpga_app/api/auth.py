@@ -1,3 +1,4 @@
+from typing import TypeVar, Callable, Any
 import bcrypt
 import sqlite3
 from flask import Blueprint, request, jsonify
@@ -15,15 +16,18 @@ def db():
     return sqlite3.connect(DB_PATH, check_same_thread=False)
 
 
-def require_auth(f):
+F = TypeVar("F", bound=Callable[..., Any])
+
+
+def require_auth(f: F) -> F:
     @wraps(f)
-    def wrapper(*args, **kwargs):
-        token = request.headers.get("X-Auth-Token")
-        if not get_session(token):
+    def wrapper(*args: Any, **kwargs: Any) -> Any:
+        token = request.cookies.get("auth_token") or request.headers.get("X-Auth-Token")
+        if not token or not get_session(token):
             return jsonify({"error": "unauthorized"}), 403
         return f(*args, **kwargs)
 
-    return wrapper
+    return wrapper  # type: ignore[return-value]
 
 
 @auth_bp.route("/login", methods=["POST"])

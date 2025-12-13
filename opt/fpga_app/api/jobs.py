@@ -1,6 +1,4 @@
-import uuid
 import sqlite3
-import json
 from flask import Blueprint, request, jsonify
 
 jobs_bp = Blueprint("jobs", __name__)
@@ -10,49 +8,6 @@ DB_PATH = "/opt/fpga_app/config/jobs.db"
 
 def db():
     return sqlite3.connect(DB_PATH, check_same_thread=False)
-
-
-@jobs_bp.route("/submit", methods=["POST"])
-def submit_job():
-    try:
-        data = request.get_json(force=True)
-    except Exception:
-        return jsonify({"error": "invalid json"}), 400
-
-    job_id = str(uuid.uuid4())
-    user_id = data.get("user_id")
-    device_id = data.get("device_id")
-    spec = json.dumps(data.get("job", {}))
-
-    if not user_id or not device_id:
-        return jsonify({"error": "user_id and device_id are required"}), 400
-
-    with db() as conn:
-        # Validate foreign keys
-        user_exists = conn.execute(
-            "SELECT id FROM users WHERE id = ?", (user_id,)
-        ).fetchone()
-        device_exists = conn.execute(
-            "SELECT device_id FROM devices WHERE device_id = ?", (device_id,)
-        ).fetchone()
-
-        if not user_exists or not device_exists:
-            return jsonify({"error": "invalid user_id or device_id"}), 400
-
-        conn.execute(
-            """
-            INSERT INTO jobs (
-                id, user_id, device_id, spec, status, queue_position
-            )
-            VALUES (?, ?, ?, ?, 'queued',
-                    COALESCE((SELECT MAX(queue_position) + 1 FROM jobs WHERE device_id = ?), 1))
-            """,
-            (job_id, user_id, device_id, spec),
-        )
-
-        conn.commit()
-
-    return jsonify({"job_id": job_id, "status": "queued"})
 
 
 @jobs_bp.route("/status/<job_id>", methods=["GET"])

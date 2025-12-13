@@ -1,7 +1,10 @@
+import uuid
 import os
-import subprocess
+import sqlite3
 from flask import Blueprint, request, jsonify
 from werkzeug.utils import secure_filename
+
+from auth.session_store import get_session
 
 fpga_bp = Blueprint("fpga", __name__)
 
@@ -45,6 +48,14 @@ def program_fpga():
     bit_path = data.get("path")
     device_sn = data.get("device_sn")
 
+    auth_token = request.cookies.get("auth_token")
+    auth_info = get_session(auth_token)
+
+    if auth_info is None:
+        return jsonify({"error": "unauthorized", "token": auth_token}), 400
+
+    user_id = auth_info.get("id")
+
     if not bit_path or not os.path.isfile(bit_path):
         return jsonify({"error": "bitfile not found"}), 400
 
@@ -53,17 +64,22 @@ def program_fpga():
     if not abs_path.startswith(UPLOAD_DIR):
         return jsonify({"error": "unauthorized path"}), 403
 
+    job_id = str(uuid.uuid4())
+
     try:
-        result = subprocess.run(
-            ["/opt/fpga_app/scripts/program_fpga.sh", abs_path, device_sn],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True,
-            check=True,
-            timeout=120,
+        conn = sqlite3.connect("/opt/fpga_app/config/jobs.db")
+        cursor = conn.cursor()
+        cursor.execute(
+            """
+            INSERT INTO jobs (id, user_id, spec, device_sn, status, ts_created)
+            VALUES (?, ?, ?, ?, 'queued', CURRENT_TIMESTAMP)
+            """,
+            (job_id, user_id, abs_path, device_sn),
         )
-        return jsonify({"status": "success", "output": result.stdout.strip()})
-    except subprocess.CalledProcessError as e:
-        return jsonify({"status": "error", "error": e.stderr.strip()}), 500
-    except subprocess.TimeoutExpired:
-        return jsonify({"status": "error", "error": "programming timeout"}), 504
+        job_id = cursor.lastrowid
+        conn.commit()
+        conn.close()
+
+        return jsonify({"status": "queued", "job_id": job_id})
+    except Exception as e:
+        return jsonify({"status": "error", "error": str(e)}), 500
