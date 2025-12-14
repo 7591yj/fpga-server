@@ -21,7 +21,7 @@ def db():
 
 def program_fpga(serial, bitfile):
     cmd = [
-        "vivado_lab",
+        "/tools/Xilinx/Vivado_Lab/2025.2/Vivado_Lab/bin/vivado_lab",
         "-mode",
         "batch",
         "-source",
