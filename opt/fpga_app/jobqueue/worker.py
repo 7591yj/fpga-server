@@ -26,7 +26,9 @@ def program_fpga(serial, bitfile):
         "batch",
         "-source",
         "/opt/fpga_app/scripts/program_fpga.tcl",
-        f'-tclargs "{bitfile}" "{serial}"',
+        "-tclargs",
+        bitfile,
+        serial,
     ]
     return subprocess.run(cmd, check=True, capture_output=True, text=True)
 
@@ -163,4 +165,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
