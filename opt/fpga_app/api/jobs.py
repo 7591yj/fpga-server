@@ -175,8 +175,8 @@ def job_cancel(job_id: str):
 
         # Update job status to 'cancelled' and set ts_cancelled
         cursor.execute(
-            "UPDATE jobs SET status = ?, ts_cancelled = CURRENT_TIMESTAMP, ts_updated = CURRENT_TIMESTAMP WHERE id = ?",
-            ("cancelled", job_id),
+            "UPDATE jobs SET status = ?, ts_cancelled = CURRENT_TIMESTAMP, ts_updated = CURRENT_TIMESTAMP WHERE id = ?, cancelled_by = ?",
+            ("cancelled", job_id, user_id),
         )
         conn.commit()
 
