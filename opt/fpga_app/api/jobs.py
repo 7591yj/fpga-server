@@ -1,6 +1,9 @@
 import sqlite3
 from flask import Blueprint, request, jsonify
 
+from api.auth import require_auth
+from auth.session_store import get_session
+
 jobs_bp = Blueprint("jobs", __name__)
 
 DB_PATH = "/opt/fpga_app/config/jobs.db"
@@ -145,3 +148,41 @@ def jobs_status(device_sn):
             ],
         }
     )
+
+
+@jobs_bp.route("/cancel/<job_id>", methods=["POST"])
+@require_auth
+def job_cancel(job_id: str):
+    token = request.cookies.get("auth_token") or request.headers.get("X-Auth-Token")
+    session_data = get_session(token)
+    if not session_data:
+        # This should be caught by @require_auth, but as a safeguard:
+        return jsonify({"error": "unauthorized"}), 403
+
+    user_id = session_data.get("id")
+
+    with db() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT user_id FROM jobs WHERE id = ?", (job_id,))
+        job = cursor.fetchone()
+
+        if not job:
+            return jsonify({"error": "Job not found"}), 404
+
+        job_user_id = job[0]
+        if job_user_id != user_id:
+            return jsonify({"error": "forbidden"}), 403
+
+        # Update job status to 'cancelled' and set ts_cancelled
+        cursor.execute(
+            "UPDATE jobs SET status = ?, ts_cancelled = CURRENT_TIMESTAMP, ts_updated = CURRENT_TIMESTAMP WHERE id = ?",
+            ("cancelled", job_id),
+        )
+        conn.commit()
+
+        if cursor.rowcount == 0:
+            # case might happen in a race condition if the job is deleted
+            # or modified between the SELECT and UPDATE.
+            return jsonify({"error": "Failed to cancel job"}), 500
+
+    return jsonify({"message": f"Job {job_id} cancelled successfully"}), 200

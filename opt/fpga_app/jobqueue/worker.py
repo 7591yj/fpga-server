@@ -19,20 +19,6 @@ def db():
     return sqlite3.connect(DB_PATH, timeout=10, isolation_level=None)
 
 
-def program_fpga(serial, bitfile):
-    cmd = [
-        "/tools/Xilinx/Vivado_Lab/2025.2/Vivado_Lab/bin/vivado_lab",
-        "-mode",
-        "batch",
-        "-source",
-        "/opt/fpga_app/scripts/program_fpga.tcl",
-        "-tclargs",
-        bitfile,
-        serial,
-    ]
-    return subprocess.run(cmd, check=True, capture_output=True, text=True)
-
-
 def lock_device(conn, serial, job_id):
     conn.execute("BEGIN IMMEDIATE")
     conn.execute(
@@ -62,66 +48,123 @@ def release_device(conn, serial):
 def run_job(job_id):
     conn = db()
     device_sn = None
+    proc = None
     try:
-        job = conn.execute(
-            "SELECT device_sn, spec FROM jobs WHERE id=?",
-            (job_id,),
+        # Fetch job details, including status to check if it's still queued
+        job_details = conn.execute(
+            "SELECT device_sn, spec, status FROM jobs WHERE id=?", (job_id,)
         ).fetchone()
-        if not job:
-            raise RuntimeError(f"Job {job_id} not found.")
-        device_sn, bitfile = job
 
+        if not job_details:
+            raise RuntimeError(f"Job {job_id} not found in database.")
+
+        device_sn, bitfile, status = job_details
+
+        if status != "queued":
+            logger.info(f"Job {job_id} status is '{status}', not 'queued'. Skipping.")
+            return
+
+        # Attempt to lock the device for this job
         if not lock_device(conn, device_sn, job_id):
-            raise RuntimeError(f"Device {device_sn} is in use.")
+            logger.warning(f"Device {device_sn} is busy. Job {job_id} will be retried.")
+            return
 
-        conn.execute(
+        # With lock acquired, atomically update status to 'running'
+        cursor = conn.cursor()
+        cursor.execute(
             """
             UPDATE jobs
-            SET status='running',
-                ts_started=CURRENT_TIMESTAMP,
-                ts_updated=CURRENT_TIMESTAMP
-            WHERE id=?
+            SET status='running', ts_started=CURRENT_TIMESTAMP, ts_updated=CURRENT_TIMESTAMP
+            WHERE id=? AND status='queued'
             """,
             (job_id,),
         )
+        if cursor.rowcount == 0:
+            logger.info(
+                f"Job {job_id} was cancelled just before starting. Releasing device."
+            )
+            release_device(conn, device_sn)
+            conn.commit()
+            return
         conn.commit()
 
-        result = program_fpga(device_sn, bitfile)
-
-        conn.execute(
-            """
-            UPDATE jobs
-            SET status='finished',
-                result=?,
-                ts_finished=CURRENT_TIMESTAMP,
-                ts_updated=CURRENT_TIMESTAMP
-            WHERE id=?
-            """,
-            (result.stdout.strip(), job_id),
+        logger.info(
+            f"Starting hardware programming for job {job_id} on device {device_sn}."
         )
-        conn.commit()
-        logger.info(f"Job {job_id} finished for device {device_sn}")
+        cmd = [
+            "/tools/Xilinx/Vivado_Lab/2025.2/Vivado_Lab/bin/vivado_lab",
+            "-mode",
+            "batch",
+            "-source",
+            "/opt/fpga_app/scripts/program_fpga.tcl",
+            "-tclargs",
+            bitfile,
+            device_sn,
+        ]
+        proc = subprocess.Popen(
+            cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True
+        )
+
+        # Monitor subprocess and check for cancellation
+        while proc.poll() is None:
+            time.sleep(1)  # Check for cancellation every second
+            current_status = conn.execute(
+                "SELECT status FROM jobs WHERE id=?", (job_id,)
+            ).fetchone()[0]
+            if current_status == "cancelled":
+                logger.info(
+                    f"Cancellation request received for job {job_id}. Terminating process."
+                )
+                proc.terminate()
+                try:
+                    proc.wait(timeout=5)
+                except subprocess.TimeoutExpired:
+                    logger.warning(
+                        f"Process for job {job_id} did not terminate gracefully, killing."
+                    )
+                    proc.kill()
+                return
+
+        stdout, stderr = proc.communicate()
+        result_output = stdout.strip() or stderr.strip()
+
+        if proc.returncode == 0:
+            logger.info(f"Job {job_id} completed successfully.")
+            conn.execute(
+                """
+                UPDATE jobs
+                SET status='finished', result=?, ts_finished=CURRENT_TIMESTAMP, ts_updated=CURRENT_TIMESTAMP
+                WHERE id=?
+                """,
+                (result_output, job_id),
+            )
+            conn.commit()
+        else:
+            logger.error(f"Job {job_id} failed with exit code {proc.returncode}.")
+            raise RuntimeError(f"FPGA programming failed: {result_output}")
 
     except Exception as e:
-        logger.error(f"Job {job_id} failed: {e}")
+        logger.error(f"An error occurred while processing job {job_id}: {e}")
+        # Avoid overwriting a 'cancelled' or 'finished' status with 'error'
         conn.execute(
             """
             UPDATE jobs
-            SET status='error',
-                result=?,
-                ts_updated=CURRENT_TIMESTAMP
-            WHERE id=?
+            SET status='error', result=?, ts_updated=CURRENT_TIMESTAMP
+            WHERE id=? AND status NOT IN ('cancelled', 'finished')
             """,
             (str(e), job_id),
         )
         conn.commit()
-
     finally:
-        if device_sn:  # release only if known
+        # Ensure the device is always released
+        if device_sn:
             try:
                 release_device(conn, device_sn)
-            except Exception:
-                pass
+                logger.info(f"Device {device_sn} released after job {job_id}.")
+            except Exception as e:
+                logger.error(
+                    f"Fatal: Failed to release device {device_sn} for job {job_id}: {e}"
+                )
         conn.close()
 
 
