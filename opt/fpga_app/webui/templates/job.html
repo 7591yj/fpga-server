@@ -29,6 +29,9 @@
             <td>{{ job.ts_created }}</td>
             <td>{{ job.job_id }}</td>
             <td>
+              {% if job.status == 'cancelled' or job_status == 'error' %}
+              <a class="has-text-danger" style="pointer-events: none; opacity: 0.6; cursor: not-allowed;" href="#">Cancel</a>
+              {% else %}
               <a class="has-text-danger job-cancel-a" href="#">Cancel</a>
               <div class="modal job-cancel-modal">
                 <div class="modal-background"></div>
@@ -41,6 +44,7 @@
                 </div>
                 <button class="modal-close is-large" aria-label="close"></button>
               </div>
+              {% endif %}
             </td>
             <td>
               <a href="{{ url_for('webui.job_detail', job_id=job.job_id) }}">Show</a>
